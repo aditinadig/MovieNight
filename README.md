@@ -1,5 +1,5 @@
 
-# Movie Night Picker
+# Movie Night
 
 ## Overview
 
