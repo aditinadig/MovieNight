@@ -1,5 +1,5 @@
 
-# Movie Night Picker - Backend
+# Movie Night - Backend
 
 ## Prerequisites
 
