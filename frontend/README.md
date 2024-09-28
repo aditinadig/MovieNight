@@ -68,3 +68,63 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+# Movie Night - Frontend
+
+## Prerequisites
+
+Before starting the frontend server, ensure you have the following installed on your system:
+
+1. **Node.js** (v14.x or later)
+   - Install from [Node.js official website](https://nodejs.org/).
+   - Check if Node.js is installed:
+     ```bash
+     node -v
+     ```
+
+2. **Git**
+   - Install Git:
+     ```bash
+     brew install git
+     ```
+   - Check if Git is installed:
+     ```bash
+     git --version
+     ```
+
+## Setup
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/movie-night-picker.git
+   cd movie-night-picker/frontend
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the root of the `frontend` folder and add the following environment variables:
+
+   ```bash
+   REACT_APP_API_URL=http://localhost:3000
+   ```
+
+## Starting the Frontend Server
+
+1. Start the frontend server:
+
+   ```bash
+   npm start
+   ```
+
+2. The React app should now be running on `http://localhost:3000`.
+
+## Additional Notes
+
+- Ensure the backend is running before testing the frontend.
+
