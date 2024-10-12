@@ -1,35 +1,3 @@
-# Movie Night
-The app allows users to organize fun movie nights by creating events, inviting friends, and voting on movies in real-time. It includes features like movie searches by genre, mood, or actor, custom playlists, and interactive games such as a Bingo-Scavenger Hunt for an enhanced movie-watching experience.
-
-## Functionalities:
-
-1. **Movie Search by Genre/Mood/Actor**
-   * User searches movies by genre, mood, or actor via TMDb API.
-   * Moods map to a certain genre: happy → comedy, romance. 
-   * Since there isn't any direct endpoint to match movies with moods, a mapping must be created between moods and their corresponding genres and stored. Then, this mapping must be used to make API requests to TMDb API.
-
-2. **Surprise Me Option - Random Movie Picker**
-   * A user can get a random movie suggestion using the TMDb API.
-   * It randomly selects based on a filter - genre/actor.
-
-3. **Create Movie Night Events**
-   * User creates an event, adds movies to the voting list, and invites friends.
-   * Events include name, date, and movie list details.
-
-4. **Real-Time Voting on Movies**
-   * Participants can vote for movies in real time; implemented through Socket.IO.
-
-5. **Customized Movie Playlists**
-   * Users will be able to create movie playlists of their own (e.g., "80s Classics").
-
-6. **Bingo Scavenger Hunt Game**
-   * Users will be allowed to take part in a movie-themed Bingo-Scavenger Hunt during movie nights.
-   * The bingo cards will show items to be done while watching the movie (e.g., "Spot a character wearing a red hat").
-   * Players compete to mark items they see, with real-time updates of game progress.
-
-
-
-
 # MovieNight App Setup Guide
 
 This guide will help you set up the **MovieNight** app, which uses **Astro** for the frontend and **Firebase** for the backend (data storage and hosting).
