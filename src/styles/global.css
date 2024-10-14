@@ -1,3 +1,36 @@
+/* global.css */
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+:root {
+  --primary-bg: #140a00;
+  --primary-text: #fffbf2;
+  --secondary-text: #fffbf29b;
+  --accent-color: #e8b92e;
+  --secondary-bg: #9ed20e11;
+  --border: #635c4f;
+}
+
+html,
+body {
+  font-family: "PT Sans", sans-serif;;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--primary-bg); /* Apply the background color you want */
+  color: var(--primary-text);
+  overflow-x: hidden; /* Prevents horizontal scrolling if necessary */
+}
+
+.MuiButton-root {
+  text-transform: none !important; /* Disable text-transform for all MUI buttons */
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+}
+

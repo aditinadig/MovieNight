@@ -1,15 +1,26 @@
 ---
-import { Button, Container, Typography } from '@mui/material';
+import Header from "../components/Header";
+import Hero from "../components/Hero";
+import Features from "../components/Features";
+import Footer from "../components/Footer";
+import { Container } from "@mui/material";
+import "../styles/global.css";
 ---
 
-<Container component="div" maxWidth="sm" client:only>
-    <Typography variant="h1" sx={{ mb: 4 }} client:only>
-      Welcome to Movie Night
-    </Typography>
-    <Typography variant="body1" sx={{ mb: 4 }} client:only>
-      Organize events, invite friends, and vote for your favorite movies in real time!
-    </Typography>
-    <Button variant="contained" color="primary" client:only>
-      Get Started
-    </Button>
-  </Container>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie Night</title>
+  </head>
+  <body>
+    <Header client:only="react" />
+    <Container sx={{ mt: 8 }} client:only="react">
+      <Hero client:only="react" />
+
+      <Features client:only="react" />
+    </Container>
+
+    <Footer client:only="react" />
+  </body>
+</html>

@@ -1,9 +1,14 @@
+// tailwind.config.js
 module.exports = {
-  content: [
-    './src/**/*.{astro,html,js,jsx,svelte,ts,tsx,vue}',
-  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primaryBg: '#241c14',     // Dark background
+        primaryText: '#f2f2f2',   // Light text color
+        accent: '#e8b92e',        // Yellowish accent color
+        secondaryBg: '#655933',   // Secondary dark color
+        secondaryText: '#D4D2CB77' // Secondary text color
+      },
+    },
   },
-  plugins: [],
 }
