@@ -61,8 +61,157 @@ firebase deploy
 
 This command will deploy the production build (in `dist/`) to Firebase Hosting, and the app will be accessible via the Firebase Hosting URL.
 
+
+
+## Additional Setup and Installations
+
+This guide will walk you through all the necessary installations apart from Astro and Firebase for the MovieNight app.
+
+### Prerequisites
+
+Ensure you've set up Astro and Firebase according to the main setup instructions. Below are additional tools, libraries, and dependencies required for the project.
+
+### 1. Material-UI (MUI)
+
+Material-UI is used for component styling throughout the app.
+
+#### Installation:
+```bash
+npm install @mui/material @mui/system @emotion/react @emotion/styled
+```
+
+#### Icons (Optional):
+To add Material-UI icons to your project:
+```bash
+npm install @mui/icons-material
+```
+
+### 2. TailwindCSS (For Utility-First CSS)
+
+We use TailwindCSS alongside MUI for utility-first CSS styling.
+
+#### Installation:
+```bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init
+```
+
+#### Configuration:
+Modify `tailwind.config.js` to specify your content paths:
+```js
+module.exports = {
+  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+In your CSS file, include the following lines to enable Tailwind:
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### 3. Axios (For API Calls)
+
+We use Axios to handle API requests to external services, such as TMDB.
+
+#### Installation:
+```bash
+npm install axios
+```
+
+### 4. ESLint (For Linting)
+
+ESLint is used for ensuring code quality and enforcing consistent coding styles.
+
+#### Installation:
+```bash
+npm install eslint --save-dev
+```
+
+#### Initialize ESLint:
+```bash
+npx eslint --init
+```
+
+### 5. Prettier (For Code Formatting)
+
+Prettier is used to automatically format code to keep it clean and consistent.
+
+#### Installation:
+```bash
+npm install --save-dev prettier
+```
+
+#### Configuration:
+Create a `.prettierrc` file with the following configuration:
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5"
+}
+```
+
+### 6. Vite (For Faster Builds)
+
+Vite is used as the build tool in Astro for faster development.
+
+#### Installation:
+```bash
+npm install vite
+```
+
+### 7. Firebase Tools (For Firebase CLI)
+
+Install Firebase CLI tools if you haven't already, for managing Firebase from the command line.
+
+#### Installation:
+```bash
+npm install -g firebase-tools
+```
+
+To initialize Firebase:
+```bash
+firebase init
+```
+
+### 8. Emotion (For CSS-in-JS with MUI)
+
+Material-UI uses Emotion for styling, so ensure you have Emotion installed.
+
+#### Installation:
+```bash
+npm install @emotion/react @emotion/styled
+```
+
+### 9. PostCSS (For CSS Processing)
+
+PostCSS is used alongside TailwindCSS to process and optimize your CSS.
+
+#### Installation:
+```bash
+npm install postcss
+```
+
+### Running the Project
+
+After installing all dependencies, run the following command to start the development server:
+
+```bash
+npm run dev
+```
+
 ## Conclusion
 
 Now you’re all set! You can run the **MovieNight** app locally and interact with the central Firebase database. No additional Firebase setup is needed for users.
 
 Enjoy using the MovieNight app! If you have any questions or run into issues, feel free to open an issue on GitHub.
+
+
+
+
