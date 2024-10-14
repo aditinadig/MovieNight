@@ -32,29 +32,7 @@ This app is connected to a **central Firebase database**. You don't need to set 
 
 ### Firebase Configuration
 
-The app already includes the Firebase credentials for connecting to the central database. You do not need to modify or set up Firebase locally.
-
-The configuration is located in `src/firebaseConfig.js`:
-```javascript
-// src/firebaseConfig.js
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-export default app;
-```
-This configuration is pre-filled with the central Firebase project credentials.
+The app already includes the Firebase credentials for connecting to the central database. You do not need to modify or set up Firebase locally
 
 ## 4. Run the App Locally
 
@@ -63,7 +41,7 @@ To run the app in development mode, use the following command:
 npm run dev
 ```
 
-This will start the development server. Visit [http://localhost:3000](http://localhost:3000) in your browser to see the app.
+This will start the development server.
 
 ## 5. Build the App for Production
 
