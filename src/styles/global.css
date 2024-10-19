@@ -1,24 +1,24 @@
 /* global.css */
-@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
+@import url('https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&family=Delius&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
   --primary-bg: #140a00;
-  --primary-text: #fffbf2;
-  --secondary-text: #fffbf29b;
+  --primary-text: #ece6d8;
+  --secondary-text: #a49c8a;
   --accent-color: #e8b92e;
-  --secondary-bg: #9ed20e11;
-  --border: #635c4f;
+  --secondary-bg: rgb(28, 18, 0);
+  --overlay-bg: #090500c5;
+  --border: #3c3221;
+  --border-radius: 0.8rem;
+  --font: 'Inter';
+
 }
 
 html,
 body {
-  font-family: "PT Sans", sans-serif;;
+  font-family: var(--font);
+  font-weight: 400;
+  font-style: normal;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -30,7 +30,25 @@ body {
 
 .MuiButton-root {
   text-transform: none !important; /* Disable text-transform for all MUI buttons */
+  font-family: var(--font) !important;
   font-weight: 600 !important;
-  font-size: 1rem !important;
+  font-size: 0.9rem !important;
+  border-radius: var(--border-radius) !important;
 }
 
+.MuiButton-root:hover {
+  opacity: 0.9 !important;
+}
+
+.MuiTypography-root {
+  font-family: var(--font) !important;
+}
+
+.MuiInputBase-root {
+  font-family: var(--font) !important;
+}
+
+.MuiCssBaseline-root {
+  font-family: var(--font) !important;
+
+}

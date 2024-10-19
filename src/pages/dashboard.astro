@@ -1,0 +1,17 @@
+---
+import Header from '../components/header_footer/Header.jsx';
+import DashboardComponent from '../components/dashboard/Dashboard.jsx'; // Assuming this is a React component
+
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <Header client:only="react" activePage="dashboard" />
+    <DashboardComponent client:only="react" />
+  </body>
+</html>

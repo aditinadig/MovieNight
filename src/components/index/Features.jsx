@@ -4,7 +4,7 @@ import { Movie, PlaylistAdd, SportsEsports } from '@mui/icons-material';
 const features = [
   {
     title: 'Real-Time Movie Voting',
-    description: 'Choose what you want to watch as a group. The movie with the most votes wins.',
+    description: 'Choose what you want to watch as a group. Movie with the most votes wins.',
     icon: <Movie />,
   },
   {
@@ -19,9 +19,9 @@ const features = [
   },
 ];
 
-export default function Features() {
+export default function Features(props) {
   return (
-    <Box sx={{ padding: '4rem 2rem' }}>
+    <Box sx={{ padding: '4rem 2rem' }} className={props.className}>
       <Typography variant="h3" sx={{fontWeight: 600, mb: 4}}>
         Features
       </Typography>
@@ -30,15 +30,17 @@ export default function Features() {
           <Grid item key={index} xs={12} sm={6} md={4}>
             <Paper
               sx={{
+                borderRadius: 'var(--border-radius)',
                 padding: '2rem',
                 backgroundColor: 'var(--secondary-bg)',
                 color: 'var(--primary-text)',
                 display: 'flex',
                 flexDirection: 'column',
+                border: "0.5px solid var(--border)",
               }}
               elevation={3}
             >
-              {feature.icon}
+              {feature.icon} 
               <Typography variant="h6" gutterBottom>
                 {feature.title}
               </Typography>

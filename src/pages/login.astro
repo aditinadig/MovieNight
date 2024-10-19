@@ -1,0 +1,28 @@
+---
+// /src/pages/signup.astro
+import { BrowserRouter } from "react-router-dom";
+import LoginForm from "../components/signup_login/LoginForm.jsx";
+import Header from "../components/header_footer/Header.jsx"; // Assuming a reusable Header component
+import Footer from "../components/header_footer/Footer.jsx"; // Assuming a reusable Footer component
+import "../styles/global.css";
+import "../styles/animations.css"; // Importing the animations CSS file
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Log In | Movie Night</title>
+  </head>
+  <body>
+    <Header activePage="login" client:only="react" />
+
+    <main
+      style="min-height: 80vh; display: flex; justify-content: center; align-items: center; padding: 2rem;"
+    >
+      <LoginForm client:only="react" />
+    </main>
+
+    <Footer client:only="react" />
+  </body>
+</html>

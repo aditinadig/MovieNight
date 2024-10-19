@@ -1,10 +1,12 @@
 ---
-import Header from "../components/Header";
-import Hero from "../components/Hero";
-import Features from "../components/Features";
-import Footer from "../components/Footer";
+import { BrowserRouter } from "react-router-dom";
+import Header from "../components/header_footer/Header";
+import Hero from "../components/index/Hero";
+import Features from "../components/index/Features";
+import Footer from "../components/header_footer/Footer";
 import { Container } from "@mui/material";
 import "../styles/global.css";
+import "../styles/animations.css"; // Importing the animations CSS file
 ---
 
 <html lang="en">
@@ -13,14 +15,12 @@ import "../styles/global.css";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Movie Night</title>
   </head>
-  <body>
-    <Header client:only="react" />
-    <Container sx={{ mt: 8 }} client:only="react">
+  <body class="fade-in">
+    <Header activePage="home" client:only="react" />
+    <Container sx={{ mt: 8 }} className="slide-in" client:only="react">
       <Hero client:only="react" />
-
       <Features client:only="react" />
     </Container>
-
     <Footer client:only="react" />
   </body>
 </html>
