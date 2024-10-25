@@ -29,6 +29,12 @@ const LoginForm = () => {
 
     try {
       // Sign in user with email and password
+      if (!email || !password) {
+        setError("Please fill in all fields.");
+        setLoading(false);
+        return;
+      }
+      
       await signInWithEmailAndPassword(auth, email, password);
 
       // Clear form fields after successful login
@@ -65,6 +71,7 @@ const LoginForm = () => {
       </Typography>
 
       <InputField
+        required={true}
         label="Email"
         type="email"
         id="email"
@@ -72,6 +79,7 @@ const LoginForm = () => {
         onChange={(e) => setEmail(e.target.value)}
       />
       <InputField
+        required={true}
         label="Password"
         type="password"
         id="password"

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button, Stack, Box, Typography, Link } from "@mui/material";
+import { Button, Stack, Box, Typography, Link, TextField } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig"; // Ensure Firebase auth is imported
 import AccentButton from "../form/accentButton";
 import OutlineButton from "../form/outlineButton";
+import LinkButton from "../form/LinkButton.jsx";
+import InputField from "../form/InputField.jsx";
 
 export default function Header({ activePage }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -50,16 +52,29 @@ export default function Header({ activePage }) {
         </Typography>
       </Link>
 
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={1}>
         {/* Conditionally render based on auth state */}
         {isAuthenticated ? (
           <>
-            {/* If authenticated, show Logout button and Dashboard */}
-            <AccentButton text="Dashboard" navigateTo="/dashboard" />
-            <OutlineButton text="Logout" onClick={handleLogout} />
+            {activePage === "dashboard" ? (
+              <>
+                <LinkButton text="Home" navigateTo="/" />
+                <LinkButton text="Create Event" navigateTo="/event" />
+                <LinkButton text="Create Playlist" navigateTo="/playlist" />
+                <LinkButton text="Profile" navigateTo="/profile" />
+                <LinkButton text="Log Out" onClick={handleLogout} />
+              </>
+            ) : (
+              <>
+                {/* If authenticated and not on the dashboard, show Dashboard and Logout */}
+                <AccentButton text="Dashboard" navigateTo="/dashboard" />
+                <OutlineButton text="Logout" onClick={handleLogout} />
+              </>
+            )}
           </>
         ) : (
           <>
+            {/* If not authenticated */}
             {activePage === "login" && (
               <OutlineButton text="Signup" navigateTo="/signup" />
             )}
