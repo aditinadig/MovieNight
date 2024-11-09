@@ -3,7 +3,7 @@ import { auth } from "../../../firebaseConfig";
 import { fetchAllMovies, fetchGenres } from "../../utils/tmdbapi.js";
 import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
-import { Box, Typography, Grid, Pagination } from "@mui/material";
+import { Box, Typography, Grid, Pagination, TextField, Slider, MenuItem } from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
 
 export default function Dashboard() {
@@ -11,21 +11,54 @@ export default function Dashboard() {
   const [genres, setGenres] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(""); // Track search input
+  const [searchQuery, setSearchQuery] = useState("");
+  const [releaseYear, setReleaseYear] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [rating, setRating] = useState([0, 10]);
+  const [language, setLanguage] = useState("");
+  const [popularity, setPopularity] = useState("");
 
+  // Language code mapping
+  const languageMap = {
+    "english": "en",
+    "korean": "ko",
+    "spanish": "es",
+    "french": "fr",
+    "german": "de",
+    "japanese": "ja",
+    "chinese": "zh",
+    // Add more languages here as needed
+  };
+
+  // Convert language name to ISO code
+  const getLanguageCode = (lang) => {
+    const lowerLang = lang.toLowerCase();
+    return languageMap[lowerLang] || "";
+  };
+
+  // Check if user is authenticated, redirect to login if not
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
         window.location.href = "/login";
       }
     });
+    return () => unsubscribe();
+  }, []);
 
+  // Fetch genres and movies with applied filters
+  useEffect(() => {
     fetchGenres()
       .then((genresData) => setGenres(genresData))
       .catch((error) => console.error("Error fetching genres:", error));
 
-    // Fetch movies based on searchQuery
-    fetchAllMovies(page, searchQuery)
+    fetchAllMovies(page, searchQuery, {
+      releaseYear,
+      selectedGenre,
+      rating,
+      language: getLanguageCode(language), // Pass ISO code for language
+      popularity,
+    })
       .then((data) => {
         if (data && data.results) {
           setMovies(data.results);
@@ -38,56 +71,138 @@ export default function Dashboard() {
         console.error("Error fetching movies:", error);
         setMovies([]);
       });
+  }, [page, searchQuery, releaseYear, selectedGenre, rating, language, popularity]);
 
-    return () => unsubscribe();
-  }, [page, searchQuery]);
-
-  const handlePageChange = (event, value) => {
-    setPage(value);
-  };
-
+  // Filter handlers
+  const handlePageChange = (event, value) => setPage(value);
   const handleSearchChange = (query) => {
     setSearchQuery(query);
-    setPage(1); // Reset to the first page on new search
+    setPage(1);
   };
+  const handleGenreChange = (event) => setSelectedGenre(event.target.value);
+  const handleReleaseYearChange = (event) => setReleaseYear(event.target.value);
+  const handleRatingChange = (event, newValue) => setRating(newValue);
+  const handleLanguageChange = (event) => setLanguage(event.target.value);
+  const handlePopularityChange = (event) => setPopularity(event.target.value);
 
+  // Map genre IDs to names
   const mapGenres = (genreIds) => {
     if (!Array.isArray(genreIds) || genreIds.length === 0) {
       return "Unknown Genre";
     }
-
     return genreIds
       .map(
-        (id) =>
-          genres.find((genre) => genre?.id === id)?.name || "Unknown Genre"
+        (id) => genres.find((genre) => genre?.id === id)?.name || "Unknown Genre"
       )
       .filter(Boolean)
       .join(", ");
   };
 
   return (
-    <Box sx={{ display: "flex", pr: 4, pl: 4 }}>
-      <Box sx={{ flex: '0 0 20%' }}>
-        <FiltersDrawer />
+    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "var(--primary-bg)" }}>
+      {/* Sidebar Filters */}
+      <Box
+        sx={{
+          width: "200px", // Fixed width for sidebar
+          bgcolor: "var(--primary-bg)",
+          color: "var(--primary-text)",
+          padding: 3,
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+        }}
+      >
+        {/* Filters Drawer with all the state and handlers passed as props */}
+        <FiltersDrawer
+          genres={genres}
+          selectedGenre={selectedGenre}
+          releaseYear={releaseYear}
+          rating={rating}
+          language={language}
+          popularity={popularity}
+          handleGenreChange={handleGenreChange}
+          handleReleaseYearChange={handleReleaseYearChange}
+          handleRatingChange={handleRatingChange}
+          handleLanguageChange={handleLanguageChange}
+          handlePopularityChange={handlePopularityChange}
+        />
+
+        <Box sx={{ mt: 4 }}>
+          {/* Genre Filter */}
+          <TextField
+            label="Genre"
+            select
+            value={selectedGenre}
+            onChange={handleGenreChange}
+            fullWidth
+          >
+            {genres.map((genre) => (
+              <MenuItem key={genre.id} value={genre.id}>
+                {genre.name}
+              </MenuItem>
+            ))}
+          </TextField>
+
+          {/* Release Year Filter */}
+          <TextField
+            label="Release Year"
+            type="number"
+            value={releaseYear}
+            onChange={handleReleaseYearChange}
+            fullWidth
+            sx={{ mt: 2 }}
+          />
+
+          {/* Rating Filter */}
+          <Typography gutterBottom>Rating</Typography>
+          <Slider
+            value={rating}
+            onChange={handleRatingChange}
+            valueLabelDisplay="auto"
+            min={0}
+            max={10}
+            sx={{ mt: 1 }}
+          />
+
+          {/* Language Filter */}
+          <TextField
+            label="Language"
+            value={language}
+            onChange={handleLanguageChange}
+            fullWidth
+            sx={{ mt: 2 }}
+          />
+
+          {/* Popularity Filter */}
+          <TextField
+            label="Popularity"
+            select
+            value={popularity}
+            onChange={handlePopularityChange}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            <MenuItem value="popularity.desc">Most Popular</MenuItem>
+            <MenuItem value="popularity.asc">Least Popular</MenuItem>
+          </TextField>
+        </Box>
       </Box>
 
       {/* Main Content */}
       <Box
         component="main"
         sx={{
-          flex: '0 0 70%',
-          flexGrow: 1,
+          flex: "1",
           p: 3,
-          backgroundColor: "var(--primary-bg)",
+          ml: "50px", // Offset for sidebar
           color: "var(--primary-text)",
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          minHeight: '100vh', // Ensure consistent height
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        <Box sx={{ width: '100%', maxWidth: '1200px', mb: 4 }}>
-          <Typography variant="h4" gutterBottom mb={4}>
+        <Box sx={{ width: "100%", maxWidth: "1200px", mb: 4 }}>
+          <Typography variant="h4" gutterBottom>
             All Movies
           </Typography>
 
@@ -95,7 +210,7 @@ export default function Dashboard() {
         </Box>
 
         {/* Movie Grid */}
-        <Grid container spacing={2} sx={{ maxWidth: '1200px' }}>
+        <Grid container spacing={2} sx={{ maxWidth: "1200px" }}>
           {movies.length > 0 ? (
             movies.map((movie) => (
               <Grid item xs={12} sm={6} md={4} lg={2.4} key={movie.id}>
@@ -111,7 +226,7 @@ export default function Dashboard() {
           )}
         </Grid>
 
-        {/* Pagination Component */}
+        {/* Pagination */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <Pagination
             count={totalPages}
