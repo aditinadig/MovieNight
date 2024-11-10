@@ -6,27 +6,22 @@ import AccentButton from "../form/accentButton";
 import OutlineButton from "../form/outlineButton";
 import LinkButton from "../form/LinkButton.jsx";
 import InputField from "../form/InputField.jsx";
+import Cookies from "js-cookie";
 
 export default function Header({ activePage }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const authToken = Cookies.get("authToken");
 
   // Listen for auth state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    });
-
-    return () => unsubscribe(); // Clean up listener on unmount
+    
   }, []);
 
   const handleLogout = async () => {
     try {
-      await auth.signOut(); // Sign out the user
-      window.location.href = "/"; // Redirect to home page after logout
+      await auth.signOut();
+      Cookies.remove("authToken"); // Remove the token cookie
+      window.location.href = "/";
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -54,7 +49,7 @@ export default function Header({ activePage }) {
 
       <Stack direction="row" spacing={1}>
         {/* Conditionally render based on auth state */}
-        {isAuthenticated ? (
+        {authToken ? (
           <>
             {activePage === "dashboard" ? (
               <>
