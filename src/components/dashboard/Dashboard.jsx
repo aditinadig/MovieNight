@@ -5,6 +5,7 @@ import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
 import { Box, Typography, Grid, Pagination, TextField, Slider, MenuItem } from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
+import Cookies from "js-cookie";
 
 export default function Dashboard() {
   const [movies, setMovies] = useState([]);
@@ -38,12 +39,13 @@ export default function Dashboard() {
 
   // Check if user is authenticated, redirect to login if not
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        window.location.href = "/login";
-      }
-    });
-    return () => unsubscribe();
+    // Check if authToken cookie exists
+    const authToken = Cookies.get("authToken");
+
+    if (!authToken) {
+      // If no session, redirect to login page
+      window.location.href = "/login";
+    }
   }, []);
 
   // Fetch genres and movies with applied filters
