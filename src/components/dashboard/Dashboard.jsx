@@ -122,7 +122,8 @@ export default function Dashboard() {
           height: "100vh",
         }}
       >
-        <AccentButton text={"Create Event"} padding="0.7rem"  width="320px"/>
+        <AccentButton text={"Create Event"} padding="0.7rem"  width="320px"/> 
+        
         <FiltersDrawer
           genres={genres}
           selectedGenre={selectedGenre}

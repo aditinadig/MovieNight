@@ -86,11 +86,12 @@ const FiltersDrawer = ({
             borderRadius: "10px",
             fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
+            borderColor: "#F1A7A0",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" }, // Golden label color
           "& .MuiSelect-icon": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#555",
+            borderColor: "#F1A7A0",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "#F1A7A0",
@@ -120,12 +121,12 @@ const FiltersDrawer = ({
           "& .MuiOutlinedInput-root": {
             backgroundColor: "#333",
             borderRadius: "10px",
-            fontSize: "15px", // Smaller font size inside the input box
+            fontSize: "15px", 
             minHeight: "10px",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#555",
+            borderColor: "#F1A7A0",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "#F1A7A0",
@@ -151,7 +152,7 @@ const FiltersDrawer = ({
           "& .MuiInputLabel-root": { color: "#FFFFFF" }, // White label color
           "& .MuiSelect-icon": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#555",
+            borderColor: "#F1A7A0",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "#F1A7A0",
@@ -211,7 +212,7 @@ const FiltersDrawer = ({
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#555",
+            borderColor: "#F1A7A0",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "#F1A7A0",
@@ -236,7 +237,7 @@ const FiltersDrawer = ({
           "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiSelect-icon": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#555",
+            borderColor: "#F1A7A0",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "#F1A7A0",

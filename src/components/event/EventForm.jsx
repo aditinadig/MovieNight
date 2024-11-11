@@ -208,6 +208,8 @@ const EventForm = () => {
           text="Create Event"
           onClick={handleCreateEvent}
           padding="12px 24px"
+          sx={{ backgroundColor: "#C08081", ":hover": { backgroundColor: "#C08081" } }} // Customize the background color
+
         />
       </Box>
     </Box>

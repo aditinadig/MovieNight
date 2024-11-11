@@ -5,7 +5,7 @@ export default function MovieCard({ title, genre, image }) {
   return (
     <Card
       sx={{
-        backgroundColor: "var(--card-bg)", // Background color
+        backgroundColor: "#4B2C31", // Background color
         color: "var(--primary-text)", // Text color
         borderRadius: "var(--border-radius)", // Border radius
         overflow: "hidden",
