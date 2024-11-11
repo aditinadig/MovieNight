@@ -13,6 +13,7 @@ const OutlineButton = ({ text, navigateTo, onClick, ...props }) => {
         color: "var(--accent-color)",
         padding: props.padding ? props.padding : "",
         width: props.width ? props.width : "100%",
+        margin: props.margin ? props.margin : "",
       }}
     >
       {text}
