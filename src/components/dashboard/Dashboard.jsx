@@ -6,6 +6,8 @@ import MovieCard from "../movies/MovieCard.jsx";
 import { Box, Typography, Grid, Pagination, TextField, Slider, MenuItem } from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
 import Cookies from "js-cookie";
+import { Modal } from "antd";
+import AccentButton from "../form/accentButton.jsx";
 
 export default function Dashboard() {
   const [movies, setMovies] = useState([]);
@@ -105,15 +107,18 @@ export default function Dashboard() {
       {/* Sidebar Filters */}
       <Box
         sx={{
-          width: "200px", // Fixed width for sidebar
+          width: "340px", // Fixed width for sidebar
           bgcolor: "var(--primary-bg)",
           color: "var(--primary-text)",
           padding: 3,
+          mt: 1,
           position: "sticky",
           top: 0,
           height: "100vh",
         }}
       >
+
+        <AccentButton text={"Create Event"} padding="0.7rem" />
         {/* Filters Drawer with all the state and handlers passed as props */}
         <FiltersDrawer
           genres={genres}
@@ -129,65 +134,7 @@ export default function Dashboard() {
           handlePopularityChange={handlePopularityChange}
         />
 
-        <Box sx={{ mt: 4 }}>
-          {/* Genre Filter */}
-          <TextField
-            label="Genre"
-            select
-            value={selectedGenre}
-            onChange={handleGenreChange}
-            fullWidth
-          >
-            {genres.map((genre) => (
-              <MenuItem key={genre.id} value={genre.id}>
-                {genre.name}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          {/* Release Year Filter */}
-          <TextField
-            label="Release Year"
-            type="number"
-            value={releaseYear}
-            onChange={handleReleaseYearChange}
-            fullWidth
-            sx={{ mt: 2 }}
-          />
-
-          {/* Rating Filter */}
-          <Typography gutterBottom>Rating</Typography>
-          <Slider
-            value={rating}
-            onChange={handleRatingChange}
-            valueLabelDisplay="auto"
-            min={0}
-            max={10}
-            sx={{ mt: 1 }}
-          />
-
-          {/* Language Filter */}
-          <TextField
-            label="Language"
-            value={language}
-            onChange={handleLanguageChange}
-            fullWidth
-            sx={{ mt: 2 }}
-          />
-
-          {/* Popularity Filter */}
-          <TextField
-            label="Popularity"
-            select
-            value={popularity}
-            onChange={handlePopularityChange}
-            fullWidth
-            sx={{ mt: 2 }}
-          >
-            <MenuItem value="popularity.desc">Most Popular</MenuItem>
-            <MenuItem value="popularity.asc">Least Popular</MenuItem>
-          </TextField>
-        </Box>
+        
       </Box>
 
       {/* Main Content */}
@@ -195,8 +142,7 @@ export default function Dashboard() {
         component="main"
         sx={{
           flex: "1",
-          p: 3,
-          ml: "50px", // Offset for sidebar
+          p: 4,
           color: "var(--primary-text)",
           display: "flex",
           flexDirection: "column",

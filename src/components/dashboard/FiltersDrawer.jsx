@@ -17,12 +17,12 @@ const FiltersDrawer = ({
   return (
     <Box
       sx={{
-        width: "100%",
+        width: "80%",
         mt: 4,
         mb: 8,
         backgroundColor: "rgba(30, 30, 30, 0.9)", // Darker background with slight transparency
         borderRadius: "var(--border-radius)",
-        p: 3,
+        p: 4,
         color: "var(--primary-text)",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
       }}
