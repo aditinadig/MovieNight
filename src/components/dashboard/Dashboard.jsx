@@ -38,6 +38,17 @@ export default function Dashboard() {
     return languageMap[lowerLang] || "";
   };
 
+  const resetFilters = () => {
+    setSelectedGenre("");
+    setReleaseYear("");
+    setRating([0, 10]);
+    setLanguage("");
+    setPopularity("");
+    setMood("");
+    setPage(1);
+    setSearchQuery("");
+  };
+
   useEffect(() => {
     const authToken = Cookies.get("authToken");
 
@@ -126,6 +137,7 @@ export default function Dashboard() {
           handleLanguageChange={handleLanguageChange}
           handlePopularityChange={handlePopularityChange}
           handleMoodChange={handleMoodChange} // Pass mood handler to FiltersDrawer
+          resetFilters={resetFilters}
         />
       </Box>
 

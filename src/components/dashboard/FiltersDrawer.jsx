@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, TextField, Slider, MenuItem } from "@mui/material";
+import { Box, Typography, TextField, Slider, MenuItem, Button } from "@mui/material";
 
 const FiltersDrawer = ({
   genres = [],
@@ -21,7 +21,8 @@ const FiltersDrawer = ({
     <Box
       sx={{
         width: "75%",
-        height: "100%",
+        height: "61%",
+        //maxHeight: "75vh",  // Ensure the box doesn't exceed the viewport height
         mt: 4,
         mb: 8,
         backgroundColor: "rgba(30, 30, 30, 0.9)", // Darker background with slight transparency
@@ -29,14 +30,47 @@ const FiltersDrawer = ({
         p: 4,
         color: "var(--primary-text)",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-        //overflowY: "auto",       // Allow scrolling inside the sidebar if content overflows
+        overflowY: "auto",       // Allow scrolling inside the sidebar if content overflows
         //position: "relative", // Sidebar position remains unchanged
-
+        "&::-webkit-scrollbar": {
+          width: "8px", // Scrollbar width
+          height: "8px", // Horizontal scrollbar height
+        },
+        "&::-webkit-scrollbar-track": {
+          background: "#333", // Dark background for the track
+          borderRadius: "10px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          background: "#b59c14", // Gold color for the thumb
+          borderRadius: "10px",
+        },
+        "&::-webkit-scrollbar-thumb:hover": {
+          background: "#ffcc00", // Lighter gold when hovering
+        },
       }}
     >
-      <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#b59c14" }}>
+      <Typography variant="h6" sx={{ mb: 0, fontWeight: "bold", color: "#FFD700" }}>
         Filters
       </Typography>
+
+      {/* Reset/Clear Filters Button */}
+      <Button
+        onClick={resetFilters}
+        variant="contained"
+        sx={{
+          mt: 1,
+          mb: 3,
+          padding: "3px 6px",
+          fontSize: "0.5rem",
+          backgroundColor: "#b59c14",
+          color: "#000000",
+          "&:hover": {
+            backgroundColor: "#FFD700",
+          },
+        }}
+      >
+        Clear All
+      </Button>
 
       {/* Genre Filter */}
       <TextField
@@ -46,10 +80,12 @@ const FiltersDrawer = ({
         onChange={handleGenreChange}
         fullWidth
         sx={{
-          mb: 2,
+          mb: 3,
           "& .MuiOutlinedInput-root": {
             backgroundColor: "#333", // Darker input background
-            borderRadius: "6px",
+            borderRadius: "10px",
+            fontSize: "15px", // Smaller font size inside the input box
+            minHeight: "10px",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" }, // Golden label color
           "& .MuiSelect-icon": { color: "#FFFFFF" },
@@ -83,7 +119,9 @@ const FiltersDrawer = ({
           mb: 3,
           "& .MuiOutlinedInput-root": {
             backgroundColor: "#333",
-            borderRadius: "6px",
+            borderRadius: "10px",
+            fontSize: "15px", // Smaller font size inside the input box
+            minHeight: "10px",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
@@ -103,10 +141,12 @@ const FiltersDrawer = ({
         onChange={handleMoodChange}
         fullWidth
         sx={{
-          mb: 3,
+          mb: 4,
           "& .MuiOutlinedInput-root": {
             backgroundColor: "#333", // Darker input background
-            borderRadius: "6px",
+            borderRadius: "10px",
+            fontSize: "15px", // Smaller font size inside the input box
+            minHeight: "10px",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" }, // White label color
           "& .MuiSelect-icon": { color: "#FFFFFF" },
@@ -140,6 +180,7 @@ const FiltersDrawer = ({
         min={0}
         max={10}
         sx={{
+          mb: 2.5,
           color: "#b59c14", // Gold-colored slider
           "& .MuiSlider-thumb": {
             backgroundColor: "#FFD700",
@@ -161,10 +202,12 @@ const FiltersDrawer = ({
         fullWidth
         sx={{
           mt: 2,
-          mb: 2,
+          mb: 3,
           "& .MuiOutlinedInput-root": {
             backgroundColor: "#333",
-            borderRadius: "6px",
+            borderRadius: "10px",
+            fontSize: "15px", // Smaller font size inside the input box
+            minHeight: "10px",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
@@ -186,7 +229,9 @@ const FiltersDrawer = ({
         sx={{
           "& .MuiOutlinedInput-root": {
             backgroundColor: "#333",
-            borderRadius: "6px",
+            borderRadius: "10px",
+            fontSize: "15px", // Smaller font size inside the input box
+            minHeight: "10px",
           },
           "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiSelect-icon": { color: "#FFFFFF" },
