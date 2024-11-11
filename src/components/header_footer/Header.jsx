@@ -43,7 +43,7 @@ export default function Header({ activePage }) {
         sx={{ color: "var(--primary-text)", textDecoration: "none" }}
       >
         <Typography variant="h5" component="h1">
-          Movie<span style={{ color: "var(--accent-color)" }}>Night</span>
+          Movie<span style={{ color: "#F1A7A0" }}>Night</span>
         </Typography>
       </Link>
 

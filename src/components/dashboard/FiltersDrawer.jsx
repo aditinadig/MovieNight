@@ -41,15 +41,15 @@ const FiltersDrawer = ({
           borderRadius: "10px",
         },
         "&::-webkit-scrollbar-thumb": {
-          background: "#b59c14", // Gold color for the thumb
+          background: "#F1A7A0", // Gold color for the thumb
           borderRadius: "10px",
         },
         "&::-webkit-scrollbar-thumb:hover": {
-          background: "#ffcc00", // Lighter gold when hovering
+          background: "#C08081", // Lighter gold when hovering
         },
       }}
     >
-      <Typography variant="h6" sx={{ mb: 0, fontWeight: "bold", color: "#FFD700" }}>
+      <Typography variant="h6" sx={{ mb: 0, fontWeight: "bold", color: "#F1A7A0" }}>
         Filters
       </Typography>
 
@@ -62,10 +62,10 @@ const FiltersDrawer = ({
           mb: 3,
           padding: "3px 6px",
           fontSize: "0.5rem",
-          backgroundColor: "#b59c14",
+          backgroundColor: "#C08081",
           color: "#000000",
           "&:hover": {
-            backgroundColor: "#FFD700",
+            backgroundColor: "#F1A7A0",
           },
         }}
       >
@@ -93,7 +93,7 @@ const FiltersDrawer = ({
             borderColor: "#555",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#FFD700",
+            borderColor: "#F1A7A0",
           },
           "& .MuiSelect-select": {
       color: "#FFFFFF", // White color for the selected text
@@ -128,7 +128,7 @@ const FiltersDrawer = ({
             borderColor: "#555",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#FFD700",
+            borderColor: "#F1A7A0",
           },
         }}
       />
@@ -154,7 +154,7 @@ const FiltersDrawer = ({
             borderColor: "#555",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#FFD700",
+            borderColor: "#F1A7A0",
           },
           "& .MuiSelect-select": {
       color: "#FFFFFF", // White color for the selected text
@@ -181,9 +181,9 @@ const FiltersDrawer = ({
         max={10}
         sx={{
           mb: 2.5,
-          color: "#b59c14", // Gold-colored slider
+          color: "#F1A7A0", 
           "& .MuiSlider-thumb": {
-            backgroundColor: "#FFD700",
+            backgroundColor: "#C08081",
             "&:hover": {
               boxShadow: "0px 0px 0px 8px rgba(255, 215, 0, 0.16)", // Gold glow
             },
@@ -214,7 +214,7 @@ const FiltersDrawer = ({
             borderColor: "#555",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#FFD700",
+            borderColor: "#F1A7A0",
           },
         }}
       />
@@ -239,7 +239,7 @@ const FiltersDrawer = ({
             borderColor: "#555",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#FFD700",
+            borderColor: "#F1A7A0",
           },
           "& .MuiSelect-select": {
       color: "#FFFFFF", // White color for the selected text
