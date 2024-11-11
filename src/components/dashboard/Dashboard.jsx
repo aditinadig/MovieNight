@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { auth } from "../../../firebaseConfig";
-import { fetchAllMovies, fetchGenres } from "../../utils/tmdbapi.js";
+import { fetchAllMovies, fetchGenres } from "../../utils/tmdbApi.js";
 import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
 import { Box, Typography, Grid, Pagination, TextField, Slider, MenuItem } from "@mui/material";
@@ -8,6 +8,7 @@ import SearchField from "../form/SearchField.jsx";
 import Cookies from "js-cookie";
 import { Modal } from "antd";
 import AccentButton from "../form/accentButton.jsx";
+import EventForm from "../event/EventForm.jsx";
 
 export default function Dashboard() {
   const [movies, setMovies] = useState([]);
@@ -20,8 +21,8 @@ export default function Dashboard() {
   const [rating, setRating] = useState([0, 10]);
   const [language, setLanguage] = useState("");
   const [popularity, setPopularity] = useState("");
+  const [mood, setMood] = useState(""); // Add mood state
 
-  // Language code mapping
   const languageMap = {
     "english": "en",
     "korean": "ko",
@@ -30,27 +31,32 @@ export default function Dashboard() {
     "german": "de",
     "japanese": "ja",
     "chinese": "zh",
-    // Add more languages here as needed
   };
 
-  // Convert language name to ISO code
   const getLanguageCode = (lang) => {
     const lowerLang = lang.toLowerCase();
     return languageMap[lowerLang] || "";
   };
 
-  // Check if user is authenticated, redirect to login if not
+  const resetFilters = () => {
+    setSelectedGenre("");
+    setReleaseYear("");
+    setRating([0, 10]);
+    setLanguage("");
+    setPopularity("");
+    setMood("");
+    setPage(1);
+    setSearchQuery("");
+  };
+
   useEffect(() => {
-    // Check if authToken cookie exists
     const authToken = Cookies.get("authToken");
 
     if (!authToken) {
-      // If no session, redirect to login page
       window.location.href = "/login";
     }
   }, []);
 
-  // Fetch genres and movies with applied filters
   useEffect(() => {
     fetchGenres()
       .then((genresData) => setGenres(genresData))
@@ -60,8 +66,9 @@ export default function Dashboard() {
       releaseYear,
       selectedGenre,
       rating,
-      language: getLanguageCode(language), // Pass ISO code for language
+      language: getLanguageCode(language),
       popularity,
+      mood, // Add mood filter here
     })
       .then((data) => {
         if (data && data.results) {
@@ -75,9 +82,8 @@ export default function Dashboard() {
         console.error("Error fetching movies:", error);
         setMovies([]);
       });
-  }, [page, searchQuery, releaseYear, selectedGenre, rating, language, popularity]);
+  }, [page, searchQuery, releaseYear, selectedGenre, rating, language, popularity, mood]);
 
-  // Filter handlers
   const handlePageChange = (event, value) => setPage(value);
   const handleSearchChange = (query) => {
     setSearchQuery(query);
@@ -88,8 +94,8 @@ export default function Dashboard() {
   const handleRatingChange = (event, newValue) => setRating(newValue);
   const handleLanguageChange = (event) => setLanguage(event.target.value);
   const handlePopularityChange = (event) => setPopularity(event.target.value);
+  const handleMoodChange = (event) => setMood(event.target.value); // Add mood handler
 
-  // Map genre IDs to names
   const mapGenres = (genreIds) => {
     if (!Array.isArray(genreIds) || genreIds.length === 0) {
       return "Unknown Genre";
@@ -104,10 +110,9 @@ export default function Dashboard() {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "var(--primary-bg)" }}>
-      {/* Sidebar Filters */}
       <Box
         sx={{
-          width: "340px", // Fixed width for sidebar
+          width: "340px",
           bgcolor: "var(--primary-bg)",
           color: "var(--primary-text)",
           padding: 3,
@@ -117,9 +122,8 @@ export default function Dashboard() {
           height: "100vh",
         }}
       >
-
-        <AccentButton text={"Create Event"} padding="0.7rem" />
-        {/* Filters Drawer with all the state and handlers passed as props */}
+        <AccentButton text={"Create Event"} padding="0.7rem"  width="320px"/> 
+        
         <FiltersDrawer
           genres={genres}
           selectedGenre={selectedGenre}
@@ -127,17 +131,17 @@ export default function Dashboard() {
           rating={rating}
           language={language}
           popularity={popularity}
+          mood={mood} // Pass mood to FiltersDrawer
           handleGenreChange={handleGenreChange}
           handleReleaseYearChange={handleReleaseYearChange}
           handleRatingChange={handleRatingChange}
           handleLanguageChange={handleLanguageChange}
           handlePopularityChange={handlePopularityChange}
+          handleMoodChange={handleMoodChange} // Pass mood handler to FiltersDrawer
+          resetFilters={resetFilters}
         />
-
-        
       </Box>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
@@ -157,7 +161,6 @@ export default function Dashboard() {
           <SearchField onSearchChange={handleSearchChange} />
         </Box>
 
-        {/* Movie Grid */}
         <Grid container spacing={2} sx={{ maxWidth: "1200px" }}>
           {movies.length > 0 ? (
             movies.map((movie) => (
@@ -174,7 +177,6 @@ export default function Dashboard() {
           )}
         </Grid>
 
-        {/* Pagination */}
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <Pagination
             count={totalPages}
