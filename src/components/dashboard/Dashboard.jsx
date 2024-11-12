@@ -7,10 +7,10 @@ import { Box, Typography, Grid, Pagination, TextField, Slider, MenuItem } from "
 import SearchField from "../form/SearchField.jsx";
 import Cookies from "js-cookie";
 import { Modal } from "antd";
-import AccentButton from "../form/accentButton.jsx";
+import AccentButton from "../form/AccentButton.jsx";
 import EventForm from "../event/EventForm.jsx";
 
-export default function Dashboard() {
+export default function Dashboard(mode) {
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [page, setPage] = useState(1);
@@ -122,8 +122,9 @@ export default function Dashboard() {
           height: "100vh",
         }}
       >
-        <AccentButton text={"Create Event"} padding="0.7rem"  width="320px"/> 
         
+        {mode.mode === "choose-movies" ? '' : <AccentButton text={"Create Event"} padding="0.7rem"  width="320px" navigateTo={"event"}/> }
+                
         <FiltersDrawer
           genres={genres}
           selectedGenre={selectedGenre}
@@ -166,6 +167,7 @@ export default function Dashboard() {
             movies.map((movie) => (
               <Grid item xs={12} sm={6} md={4} lg={2.4} key={movie.id}>
                 <MovieCard
+                mode={mode.mode}
                   title={movie.title}
                   genre={mapGenres(movie.genre_ids)}
                   image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}

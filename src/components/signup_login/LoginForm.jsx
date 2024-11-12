@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword, onAuthStateChanged, getIdToken } from "fire
 import { auth } from "../../../firebaseConfig";
 import InputField from "../form/InputField.jsx";
 import OAuthButtons from "../form/OAuthButtons.jsx";
-import AccentButton from "../form/accentButton.jsx";
+import AccentButton from "../form/AccentButton.jsx";
 import Cookies from "js-cookie";
 
 const LoginForm = () => {

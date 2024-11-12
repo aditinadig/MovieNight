@@ -12,7 +12,7 @@ import {
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { db, auth } from "../../../firebaseConfig";
 import InputField from "../form/InputField";
-import AccentButton from "../form/accentButton";
+import AccentButton from "../form/AccentButton";
 import OutlineButton from "../form/outlineButton";
 import AddIcon from "@mui/icons-material/Add";
 import {
@@ -236,6 +236,7 @@ const EventForm = () => {
               },
               "&.Mui-focused fieldset": {
                 borderColor: "var(--accent-color) !important",
+                color: "var(--accent-color)",
                 borderWidth: "2px",
               },
             },
@@ -302,6 +303,7 @@ const EventForm = () => {
               },
               "&.Mui-focused fieldset": {
                 borderColor: "var(--accent-color) !important",
+                color: "var(--accent-color)",
                 borderWidth: "2px",
               },
             },
@@ -470,11 +472,11 @@ const EventForm = () => {
             color: "var(--primary-text)", // Customize text color
           }}
         >
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography variant="h4" sx={{ mb: 2 }}>
             Movie Selection
           </Typography>
           {/* Render the Dashboard component here */}
-          <Dashboard />
+          <Dashboard mode="choose-movies"/>
         </Box>
       </Modal>
 

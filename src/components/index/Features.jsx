@@ -32,7 +32,7 @@ export default function Features(props) {
               sx={{
                 borderRadius: 'var(--border-radius)',
                 padding: '2rem',
-                backgroundColor: '#4B2C31',
+                backgroundColor: 'var(--secondary-bg)',
                 color: 'var(--primary-text)',
                 display: 'flex',
                 flexDirection: 'column',
