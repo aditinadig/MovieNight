@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, Stack, Box, Typography, Link, TextField } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig"; // Ensure Firebase auth is imported
-import AccentButton from "../form/accentButton";
+import AccentButton from "../form/AccentButton";
 import OutlineButton from "../form/outlineButton";
 import LinkButton from "../form/LinkButton.jsx";
 import InputField from "../form/InputField.jsx";
@@ -43,7 +43,7 @@ export default function Header({ activePage }) {
         sx={{ color: "var(--primary-text)", textDecoration: "none" }}
       >
         <Typography variant="h5" component="h1">
-          Movie<span style={{ color: "#F1A7A0" }}>Night</span>
+          Movie<span style={{ color: "var(--accent-color)" }}>Night</span>
         </Typography>
       </Link>
 

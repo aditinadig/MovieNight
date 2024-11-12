@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
-import AccentButton from "../form/accentButton";
+import AccentButton from "../form/AccentButton";
 import { auth } from "../../../firebaseConfig"; // Import Firebase auth
 
 export default function Hero(props) {
