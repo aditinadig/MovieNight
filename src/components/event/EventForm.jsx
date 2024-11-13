@@ -8,6 +8,9 @@ import {
   ListItem,
   ListItemText,
   Modal,
+  Snackbar,
+  Alert,
+  Button,
 } from "@mui/material";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { db, auth } from "../../../firebaseConfig";
@@ -17,12 +20,16 @@ import OutlineButton from "../form/outlineButton";
 import AddIcon from "@mui/icons-material/Add";
 import {
   DatePicker,
-  TimePicker,
   MobileTimePicker,
   LocalizationProvider,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Dashboard from "../dashboard/Dashboard";
+import UserCard from "../movies/UserCard";
+import { Movie } from "@mui/icons-material";
+import MovieCard from "../movies/MovieCard";
+import MovieCardSelected from "../movies/MovieCardSelected";
+import { color } from "framer-motion";
 
 const EventForm = () => {
   const [eventName, setEventName] = useState("");
@@ -36,12 +43,7 @@ const EventForm = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
-
-  const availableMovies = [
-    { title: "The Matrix", tmdb_id: "603", year: 1999 },
-    { title: "Inception", tmdb_id: "27205", year: 2010 },
-    { title: "Interstellar", tmdb_id: "157336", year: 2014 },
-  ];
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
 
   // Retrieve all registered users from Firestore, excluding those already invited
   const retrieveAllUsers = async () => {
@@ -53,7 +55,9 @@ const EventForm = () => {
           email: doc.data().email,
           UID: doc.data().UID,
         }))
-        .filter((user) => !invitees.includes(user.email)); // Filter out already invited users
+        .filter(
+          (user) => !invitees.some((invitee) => invitee.email === user.email)
+        ); // Exclude invitees
       setAllUsers(users);
     } catch (error) {
       console.error("Error retrieving users:", error);
@@ -64,19 +68,30 @@ const EventForm = () => {
     retrieveAllUsers();
   }, [invitees]); // Refresh the user list when invitees changes
 
+  // Inside EventForm component
   const handleSelectMovie = (movie) => {
     if (
       !selectedMovies.some((selected) => selected.tmdb_id === movie.tmdb_id)
     ) {
       setSelectedMovies((prev) => [
         ...prev,
-        { title: movie.title, tmdb_id: movie.tmdb_id },
+        {
+          title: movie.title,
+          tmdb_id: movie.tmdb_id,
+          poster: `https://image.tmdb.org/t/p/w500${movie.poster_path}`, // Include poster path
+        },
       ]);
     }
   };
 
   const handleCreateEvent = async () => {
     const creatorId = auth.currentUser?.uid;
+    console.log("Creator ID:", creatorId);
+    console.log("Event Name:", eventName);
+    console.log("Event Date:", eventDate);
+    console.log("Event Time:", eventTime);
+    console.log("Invitees:", invitees);
+    console.log("Selected Movies:", selectedMovies);
     if (!creatorId || !eventName || !eventDate || !eventTime) {
       alert("Please fill in all required fields.");
       return;
@@ -90,33 +105,12 @@ const EventForm = () => {
         minute: "2-digit",
       });
 
-      // Retrieve UIDs for invitees and save the event
-      const inviteesWithUIDs = await Promise.all(
-        invitees.map(async (email) => {
-          const usersRef = collection(db, "users");
-          const userQuery = query(usersRef, where("email", "==", email));
-          const querySnapshot = await getDocs(userQuery);
-
-          if (!querySnapshot.empty) {
-            const userData = querySnapshot.docs[0].data();
-            return { email, uid: userData.UID };
-          } else {
-            console.warn(`UID not found for invitee: ${email}`);
-            return null;
-          }
-        })
-      );
-
-      const validInvitees = inviteesWithUIDs.filter(
-        (invitee) => invitee !== null
-      );
-
       const eventRef = await addDoc(collection(db, "events"), {
         creator: creatorId,
         date: formattedDate, // Store formatted date
         time: formattedTime, // Store formatted time
         event_name: eventName,
-        invitees: validInvitees,
+        invitees: invitees,
         movies: selectedMovies,
         votes: [],
       });
@@ -127,9 +121,14 @@ const EventForm = () => {
       setEventTime(null);
       setSelectedMovies([]);
       setInvitees([]);
+      setSnackbarOpen(true); // Show success message
     } catch (error) {
       console.error("Error creating event: ", error);
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   const handleInviteClick = () => {
@@ -140,27 +139,54 @@ const EventForm = () => {
     setModalOpen(true); // Opens modal for choosing a friend
   };
   const handleCloseModal = () => setModalOpen(false); // Closes modal
-  const handleSelectUser = (email) => {
-    setInvitees((prev) => [...prev, email]);
-    // setModalOpen(false); // Close modal after selecting a user
+
+  const handleSelectUser = (user) => {
+    setInvitees((prevInvitees) => {
+      const isAlreadyInvited = prevInvitees.some(
+        (invitee) => invitee.email === user.email
+      );
+
+      // Toggle the invitee: if they’re already invited, remove them; otherwise, add them
+      if (isAlreadyInvited) {
+        return prevInvitees.filter((invitee) => invitee.email !== user.email);
+      } else {
+        return [...prevInvitees, user];
+      }
+    });
   };
 
   const handleAddInvitee = async () => {
     if (inviteEmail.trim()) {
       // Check if the email is already in the invitees list
-      if (invitees.includes(inviteEmail)) {
-        setUserNotFound(true);
-        return; // Exit the function if the email is already in the list
+      const existingInviteeIndex = invitees.findIndex(
+        (invitee) => invitee.email === inviteEmail
+      );
+
+      if (existingInviteeIndex !== -1) {
+        // Remove the existing invitee
+        setInvitees((prev) =>
+          prev.filter((invitee) => invitee.email !== inviteEmail)
+        );
+        setInviteEmail(""); // Clear the input
+        setUserNotFound(false);
+        return;
       }
 
+      // Otherwise, proceed to add the user if they exist in the database
       try {
         const usersRef = collection(db, "users");
         const userQuery = query(usersRef, where("email", "==", inviteEmail));
         const querySnapshot = await getDocs(userQuery);
 
         if (!querySnapshot.empty) {
-          setInvitees((prev) => [...prev, inviteEmail]);
-          setInviteEmail("");
+          const userData = querySnapshot.docs[0].data(); // Extract user data
+
+          // Add user to invitees with name and email
+          setInvitees((prev) => [
+            ...prev,
+            { username: userData.username, email: inviteEmail },
+          ]);
+          setInviteEmail(""); // Clear the input
           setUserNotFound(false);
         } else {
           setUserNotFound(true);
@@ -182,10 +208,15 @@ const EventForm = () => {
         margin: "auto",
         color: "var(--primary-text)",
         p: 4,
+        my: 4,
       }}
     >
+      <Button variant="link" href="/dashboard" sx={{ mb: 2, color: "var(--highlight-color)" }}>
+        Go back to Dashboard
+      </Button>
+
       <Typography
-        variant="h4"
+        variant="h3"
         sx={{
           fontWeight: "600",
           marginBottom: 4,
@@ -316,11 +347,12 @@ const EventForm = () => {
 
       {/* Invite Friends Section */}
       <Box mt={4} sx={{ marginBottom: 4 }}>
-        <Box display="flex" alignItems="center">
-          <Typography variant="h5">Invite Friends</Typography>
-        </Box>
-
         <Box display="flex" alignItems="center" mt={2}>
+          <Box display="flex" alignItems="center">
+            <Typography variant="h5" mr={2}>
+              Invite Friends
+            </Typography>
+          </Box>
           <OutlineButton
             text="Add Email ID"
             onClick={handleInviteClick}
@@ -336,17 +368,22 @@ const EventForm = () => {
 
         {/* Display List of Invitees */}
         {invitees.length > 0 && (
-          <List>
-            {invitees.map((email, index) => (
-              <ListItem key={index}>
-                Invitee {index + 1}: &nbsp;
-                <ListItemText
-                  primary={email}
-                  sx={{ color: "var(--primary-text)" }}
-                />
-              </ListItem>
+          <Box
+            sx={{
+              display: "flex", // Arrange items horizontally
+              flexWrap: "wrap", // Wrap items if they exceed container width
+              gap: 2, // Add spacing between items
+              overflowX: "auto", // Enable horizontal scrolling if needed
+            }}
+          >
+            {invitees.map((user, index) => (
+              <Box key={index} sx={{ minWidth: "150px", mt: 2 }}>
+                {" "}
+                {/* Adjust minWidth as needed */}
+                <UserCard username={user.username} email={user.email} />
+              </Box>
             ))}
-          </List>
+          </Box>
         )}
 
         {showInviteInput && (
@@ -385,82 +422,108 @@ const EventForm = () => {
             mt: "10%",
           }}
         >
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Select a Friend
+          <Typography
+            variant="h4"
+            sx={{ mb: 2, color: "var(--highlight-color)" }}
+          >
+            Select your friends
           </Typography>
-          <List>
-            {allUsers.length === 0
-              ? "No friends found"
-              : allUsers.map((user, index) => (
-                  <ListItem
-                    button="true"
-                    key={index}
-                    onClick={() => handleSelectUser(user.email)}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "var(--secondary-bg)", // Highlight color on hover
-                      },
-                    }}
+          <List sx={{ overflowX: "auto" }}>
+            {allUsers.length === 0 ? (
+              <Typography>No friends found</Typography>
+            ) : (
+              allUsers
+                .reduce((rows, user, index) => {
+                  if (index % 2 === 0) rows.push([]);
+                  rows[rows.length - 1].push(user);
+                  return rows;
+                }, [])
+                .map((row, rowIndex) => (
+                  <Grid
+                    container
+                    key={rowIndex}
+                    spacing={2}
+                    sx={{ mb: 2, display: "flex", justifyContent: "center" }}
                   >
-                    <ListItemText
-                      sx={{ color: "var(--primary-text)" }}
-                      primary={user.username}
-                    />
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "var(--secondary-text)" }}
-                    >
-                      {" "}
-                      {user.email}
-                    </Typography>
-                  </ListItem>
-                ))}
+                    {row.map((user, index) => {
+                      const isInvited = invitees.some(
+                        (invitee) => invitee.email === user.email
+                      );
+                      return (
+                        <Grid item xs={12} sm={6} key={index}>
+                          <Box
+                            onClick={() => handleSelectUser(user)}
+                            sx={{
+                              cursor: "pointer",
+                              backgroundColor: isInvited
+                                ? "var(--selected-bg)"
+                                : "var(--primary-bg)",
+                              "&:hover": {
+                                backgroundColor: "var(--secondary-bg)",
+                                transform: "scale(1.03)",
+                              },
+                              borderRadius: "12px",
+                              overflow: "hidden",
+                              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                              transition: "transform 0.2s",
+                            }}
+                          >
+                            <UserCard
+                              username={user.username}
+                              email={user.email}
+                            />
+                          </Box>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                ))
+            )}
           </List>
         </Box>
       </Modal>
 
       {/* Movie Selection */}
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
-        Add Movies to Vote On
-      </Typography>
-      {/* <Grid container spacing={2}>
-        {availableMovies.map((movie) => (
-          <Grid item xs={6} sm={3} key={movie.tmdb_id}>
-            <Box
-              onClick={() => handleSelectMovie(movie)}
-              sx={{
-                cursor: "pointer",
-                p: 1,
-                border: "1px solid var(--border)",
-                borderRadius: "var(--border-radius)",
-                backgroundColor: selectedMovies.some(
-                  (selected) => selected.tmdb_id === movie.tmdb_id
-                )
-                  ? "var(--accent-color)"
-                  : "transparent",
-              }}
-            >
-              <Typography variant="body1" sx={{ color: "var(--primary-text)" }}>
-                {movie.title}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: "var(--secondary-text)" }}
-              >
-                {movie.year}
-              </Typography>
-            </Box>
-          </Grid>
-        ))}
-      </Grid> */}
-      <OutlineButton
-        text="Choose Movies"
-        onClick={handleOpenDashboardModal}
-        width="25%"
-      />
+      <Box sx={{ display: "flex", mb: 2 }}>
+        <Typography variant="h5" sx={{ marginBottom: 2, mr: 4 }}>
+          Add Movies to Vote On
+        </Typography>
+        <OutlineButton
+          text="Choose Movies"
+          onClick={handleOpenDashboardModal}
+          width="25%"
+          padding="0"
+        />
+      </Box>
 
-      <Modal open={dashboardModalOpen} onClose={handleCloseDashboardModal} sx={{overflowY: "auto", maxHeight: "600px"}}>
+      {selectedMovies.length > 0 && (
+        <Box
+          sx={{
+            display: "flex", // Display items in a row
+            flexWrap: "wrap", // Wrap items to the next row if they exceed container width
+            gap: 2, // Space between items
+            overflowX: "auto", // Enable horizontal scrolling if needed
+          }}
+        >
+          {selectedMovies.map((movie, index) => (
+            <Box key={index} sx={{ width: "10rem" }}>
+              {" "}
+              {/* Adjust minWidth as needed */}
+              <MovieCardSelected
+                id={movie.tmdb_id}
+                title={movie.title}
+                image={movie.poster}
+              />
+            </Box>
+          ))}
+        </Box>
+      )}
+
+      <Modal
+        open={dashboardModalOpen}
+        onClose={handleCloseDashboardModal}
+        sx={{ overflowY: "auto", maxHeight: "700px" }}
+      >
         <Box
           sx={{
             p: 4,
@@ -468,15 +531,30 @@ const EventForm = () => {
             borderRadius: "8px",
             maxWidth: "1200px", // Adjust width as needed
             mx: "auto",
-            mt: "5%", // Center vertically on the page
+            mt: "10%", // Center vertically on the page
             color: "var(--primary-text)", // Customize text color
           }}
         >
-          <Typography variant="h4" sx={{ mb: 2 }}>
-            Movie Selection
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h4"
+              sx={{ mb: 2, color: "var(--highlight-color)" }}
+            >
+              Movie Selection
+            </Typography>
+            <AccentButton
+              text="Add Movies"
+              onClick={handleCloseDashboardModal}
+              width="30%"
+            />
+          </Box>
+
           {/* Render the Dashboard component here */}
-          <Dashboard mode="choose-movies"/>
+          <Dashboard
+            mode="choose-movies"
+            onSelectMovie={handleSelectMovie}
+            selectedMovies={selectedMovies}
+          />
         </Box>
       </Modal>
 
@@ -486,10 +564,27 @@ const EventForm = () => {
           text="Create Event"
           onClick={handleCreateEvent}
           padding="12px 24px"
-          sx={{ backgroundColor: "#C08081", ":hover": { backgroundColor: "#C08081" } }} // Customize the background color
-
+          sx={{
+            backgroundColor: "#C08081",
+            ":hover": { backgroundColor: "#C08081" },
+          }} // Customize the background color
         />
       </Box>
+      {/* Snackbar for Event Creation Feedback */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          Event created successfully!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
