@@ -54,9 +54,8 @@ export default function Header({ activePage }) {
             {activePage === "dashboard" ? (
               <>
                 <LinkButton text="Home" navigateTo="/" />
-                <LinkButton text="Create Event" navigateTo="/event" />
-                <LinkButton text="Create Playlist" navigateTo="/playlist" />
-                <LinkButton text="Profile" navigateTo="/profile" />
+                <LinkButton text="Events" navigateTo="/all-events" />
+                <LinkButton text="Playlists" navigateTo="/all-playlists" />
                 <LinkButton text="Log Out" onClick={handleLogout} />
               </>
             ) : (
