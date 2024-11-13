@@ -42,8 +42,8 @@ export default function Header({ activePage }) {
         href="/"
         sx={{ color: "var(--primary-text)", textDecoration: "none" }}
       >
-        <Typography variant="h5" component="h1">
-          Movie<span style={{ color: "var(--accent-color)" }}>Night</span>
+        <Typography variant="h5" component="h1" sx={{fontWeight: 500}}>
+          Movie<span style={{ color: "var(--highlight-color)" }}>Night</span>
         </Typography>
       </Link>
 

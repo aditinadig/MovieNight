@@ -9,11 +9,12 @@ const OutlineButton = ({ text, navigateTo, onClick, ...props }) => {
       onClick={onClick}
       href={navigateTo}
       sx={{
-        borderColor: "var(--accent-color)",
-        color: "var(--accent-color)",
+        borderColor: "var(--secondary-text)",
+        color: "var(--secondary-text)",
         padding: props.padding ? props.padding : "",
         width: props.width ? props.width : "100%",
         margin: props.margin ? props.margin : "",
+        height: "2.3rem"
       }}
     >
       {text}

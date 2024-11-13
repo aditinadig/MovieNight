@@ -1,17 +1,18 @@
 /* global.css */
-@import url('https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&family=Delius&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&family=Delius&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
-  --primary-bg: #1f1f22;
+  --primary-bg: #191919;
   --primary-text: #ffffff;
-  --secondary-text: #adadb1;
-  --accent-color: #fdc4cd;
-  --secondary-bg: #26262c;
-  --card-bg: #292930;
-  --overlay-bg: #1b1b1ecc;
-  --border:  #373749;
+  --secondary-text: #bbb4b1;
+  --accent-color: #86D293;
+  --highlight-color: #F99417;
+  --secondary-bg: #212020;
+  --card-bg: #2a2929;
+  --overlay-bg: #191919cc;
+  --border:  #2a2929;
   --border-radius: 0.8rem;
-  --font: 'Inter';
+  --font: "Lexend Deca", serif;;
 
 }
 
@@ -32,7 +33,6 @@ body {
 .MuiButton-root {
   text-transform: none !important; /* Disable text-transform for all MUI buttons */
   font-family: var(--font) !important;
-  font-weight: 600 !important;
   font-size: 0.9rem !important;
   border-radius: var(--border-radius) !important;
 }
