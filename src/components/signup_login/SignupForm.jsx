@@ -5,7 +5,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { auth, db } from "../../../firebaseConfig"; // Ensure db is imported
 import InputField from "../form/InputField.jsx";
 import OAuthButtons from "../form/OAuthButtons.jsx";
-import AccentButton from "../form/accentButton.jsx";
+import AccentButton from "../form/AccentButton.jsx";
 import Cookies from "js-cookie";
 
 const SignUpForm = () => {

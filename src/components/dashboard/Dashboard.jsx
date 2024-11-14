@@ -21,6 +21,14 @@ import EventForm from "../event/EventForm.jsx";
 import OutlineButton from "../form/outlineButton.jsx";
 
 export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
+  useEffect(() => {
+    const authToken = Cookies.get("authToken");
+
+    if (!authToken) {
+      window.location.href = "/login";
+    }
+  }, []);
+
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [page, setPage] = useState(1);
@@ -64,14 +72,6 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     setPage(1);
     setSearchQuery("");
   };
-
-  useEffect(() => {
-    const authToken = Cookies.get("authToken");
-
-    if (!authToken) {
-      window.location.href = "/login";
-    }
-  }, []);
 
   useEffect(() => {
     fetchGenres()

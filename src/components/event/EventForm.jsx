@@ -31,8 +31,18 @@ import MovieCard from "../movies/MovieCard";
 import MovieCardSelected from "../movies/MovieCardSelected";
 import { fetchUserByUID } from "../../services/usersService";
 import { set } from "date-fns";
+import Cookies from "js-cookie";
 
 const EventForm = () => {
+
+  useEffect(() => {
+    const authToken = Cookies.get("authToken");
+
+    if (!authToken) {
+      window.location.href = "/login";
+    }
+  }, []);
+
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState(null);
   const [eventTime, setEventTime] = useState(null);

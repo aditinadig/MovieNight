@@ -11,8 +11,17 @@ import EventCard from "../movies/EventCard";
 import AccentButton from "../form/AccentButton";
 import VoteMovies from "../vote/VoteMovies";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import Cookies from "js-cookie";    
 
 const AllEvents = () => {
+  useEffect(() => {
+    const authToken = Cookies.get("authToken");
+
+    if (!authToken) {
+      window.location.href = "/login";
+    }
+  }, []);
+
   const [events, setEvents] = useState([]); // Initialize events as an empty array
   const [userId, setUserId] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
