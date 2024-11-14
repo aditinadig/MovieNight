@@ -71,7 +71,7 @@ This guide will walk you through all the necessary installations apart from Astr
 
 Ensure you've set up Astro and Firebase according to the main setup instructions. Below are additional tools, libraries, and dependencies required for the project.
 
-### Material-UI (MUI)
+### 1. Material-UI (MUI)
 
 Material-UI is used for component styling throughout the app.
 
@@ -87,7 +87,7 @@ npm install @mui/icons-material
 ```
 
 
-### 3. Axios (For API Calls)
+### 2. Axios (For API Calls)
 
 We use Axios to handle API requests to external services, such as TMDB.
 
@@ -96,7 +96,7 @@ We use Axios to handle API requests to external services, such as TMDB.
 npm install axios
 ```
 
-### 4. ESLint (For Linting)
+### 3. ESLint (For Linting)
 
 ESLint is used for ensuring code quality and enforcing consistent coding styles.
 
@@ -110,7 +110,7 @@ npm install eslint --save-dev
 npx eslint --init
 ```
 
-### 5. Prettier (For Code Formatting)
+### 4. Prettier (For Code Formatting)
 
 Prettier is used to automatically format code to keep it clean and consistent.
 
@@ -129,7 +129,7 @@ Create a `.prettierrc` file with the following configuration:
 }
 ```
 
-### 6. Vite (For Faster Builds)
+### 5. Vite (For Faster Builds)
 
 Vite is used as the build tool in Astro for faster development.
 
@@ -138,7 +138,7 @@ Vite is used as the build tool in Astro for faster development.
 npm install vite
 ```
 
-### 7. Firebase Tools (For Firebase CLI)
+### 6. Firebase Tools (For Firebase CLI)
 
 Install Firebase CLI tools if you haven't already, for managing Firebase from the command line.
 
@@ -152,7 +152,7 @@ To initialize Firebase:
 firebase init
 ```
 
-### 8. Emotion (For CSS-in-JS with MUI)
+### 7. Emotion (For CSS-in-JS with MUI)
 
 Material-UI uses Emotion for styling, so ensure you have Emotion installed.
 
