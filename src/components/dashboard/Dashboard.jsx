@@ -51,7 +51,26 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     german: "de",
     japanese: "ja",
     chinese: "zh",
-  };
+    italian: "it",
+    portuguese: "pt",
+    russian: "ru",
+    hindi: "hi",
+    arabic: "ar",
+    dutch: "nl",
+    swedish: "sv",
+    danish: "da",
+    finnish: "fi",
+    norwegian: "no",
+    polish: "pl",
+    turkish: "tr",
+    greek: "el",
+    thai: "th",
+    vietnamese: "vi",
+    hebrew: "he",
+    czech: "cs",
+    indonesian: "id",
+};
+
 
   const handleModalClose = () => {
     setIsSurpriseModalVisible(false);

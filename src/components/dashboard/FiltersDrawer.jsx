@@ -227,38 +227,66 @@ const FiltersDrawer = ({
         }}
       />
 
-      {/* Language Filter */}
-      <TextField
-        label="Language"
-        value={language}
-        onChange={handleLanguageChange}
-        fullWidth
-        sx={{
-          mb: 3,
-          "& .MuiOutlinedInput-root": {
-            color: "var(--primary-text)",
-            backgroundColor: "var(--card-bg)", // Darker input background
-            borderRadius: "10px",
-            fontSize: "15px", // Smaller font size inside the input box
-            minHeight: "10px",
-            borderColor: "var(--border)",
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "var(--accent-color) !important",
-            },
-          },
-          "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
-          "& .MuiSelect-icon": { color: "var(--primary-text)" },
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "var(--border)",
-          },
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "var(--accent-color)",
-          },
-          "& .MuiSelect-select": {
-            color: "var(--primary-text)", // White color for the selected text
-          },
-        }}
-      />
+     {/* Language Filter */}
+<TextField
+  label="Language"
+  select
+  value={language}
+  onChange={handleLanguageChange}
+  fullWidth
+  sx={{
+    mb: 3,
+    "& .MuiOutlinedInput-root": {
+      color: "var(--primary-text)",
+      backgroundColor: "var(--card-bg)", // Darker input background
+      borderRadius: "10px",
+      fontSize: "15px", // Smaller font size inside the input box
+      minHeight: "10px",
+      borderColor: "var(--border)",
+      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+        borderColor: "var(--accent-color) !important",
+      },
+    },
+    "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Label color
+    "& .MuiSelect-icon": { color: "var(--primary-text)" },
+    "& .MuiOutlinedInput-notchedOutline": {
+      borderColor: "var(--border)",
+    },
+    "&:hover .MuiOutlinedInput-notchedOutline": {
+      borderColor: "var(--accent-color)",
+    },
+    "& .MuiSelect-select": {
+      color: "var(--primary-text)", // White color for the selected text
+    },
+  }}
+>
+<MenuItem value="">Select Language</MenuItem>
+  <MenuItem value="english">English</MenuItem>
+  <MenuItem value="korean">Korean</MenuItem>
+  <MenuItem value="spanish">Spanish</MenuItem>
+  <MenuItem value="french">French</MenuItem>
+  <MenuItem value="german">German</MenuItem>
+  <MenuItem value="japanese">Japanese</MenuItem>
+  <MenuItem value="chinese">Chinese</MenuItem>
+  <MenuItem value="italian">Italian</MenuItem>
+  <MenuItem value="portuguese">Portuguese</MenuItem>
+  <MenuItem value="russian">Russian</MenuItem>
+  <MenuItem value="hindi">Hindi</MenuItem>
+  <MenuItem value="arabic">Arabic</MenuItem>
+  <MenuItem value="dutch">Dutch</MenuItem>
+  <MenuItem value="swedish">Swedish</MenuItem>
+  <MenuItem value="danish">Danish</MenuItem>
+  <MenuItem value="finnish">Finnish</MenuItem>
+  <MenuItem value="norwegian">Norwegian</MenuItem>
+  <MenuItem value="polish">Polish</MenuItem>
+  <MenuItem value="turkish">Turkish</MenuItem>
+  <MenuItem value="greek">Greek</MenuItem>
+  <MenuItem value="thai">Thai</MenuItem>
+  <MenuItem value="vietnamese">Vietnamese</MenuItem>
+  <MenuItem value="hebrew">Hebrew</MenuItem>
+  <MenuItem value="czech">Czech</MenuItem>
+  <MenuItem value="indonesian">Indonesian</MenuItem></TextField>
+
 
       {/* Popularity Filter */}
       <TextField
