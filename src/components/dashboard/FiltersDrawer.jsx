@@ -24,6 +24,9 @@ const FiltersDrawer = ({
   handleMoodChange,
   resetFilters,
 }) => {
+
+  
+
   return (
     <Box
       sx={{
@@ -104,6 +107,7 @@ const FiltersDrawer = ({
           },
           "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
           "& .MuiSelect-icon": { color: "var(--primary-text)" },
+
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "var(--border)",
           },
