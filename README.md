@@ -71,7 +71,7 @@ This guide will walk you through all the necessary installations apart from Astr
 
 Ensure you've set up Astro and Firebase according to the main setup instructions. Below are additional tools, libraries, and dependencies required for the project.
 
-### 1. Material-UI (MUI)
+### Material-UI (MUI)
 
 Material-UI is used for component styling throughout the app.
 
@@ -86,34 +86,6 @@ To add Material-UI icons to your project:
 npm install @mui/icons-material
 ```
 
-### 2. TailwindCSS (For Utility-First CSS)
-
-We use TailwindCSS alongside MUI for utility-first CSS styling.
-
-#### Installation:
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init
-```
-
-#### Configuration:
-Modify `tailwind.config.js` to specify your content paths:
-```js
-module.exports = {
-  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
-```
-
-In your CSS file, include the following lines to enable Tailwind:
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
 
 ### 3. Axios (For API Calls)
 
@@ -187,15 +159,6 @@ Material-UI uses Emotion for styling, so ensure you have Emotion installed.
 #### Installation:
 ```bash
 npm install @emotion/react @emotion/styled
-```
-
-### 9. PostCSS (For CSS Processing)
-
-PostCSS is used alongside TailwindCSS to process and optimize your CSS.
-
-#### Installation:
-```bash
-npm install postcss
 ```
 
 ### Running the Project
