@@ -1,4 +1,4 @@
-import { db } from "../../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
 
 const bingoTasksCollectionRef = collection(db, "bingo_tasks");

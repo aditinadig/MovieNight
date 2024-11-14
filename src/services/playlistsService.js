@@ -1,4 +1,4 @@
-import { db } from "../../../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 const playlistsCollectionRef = collection(db, "playlists");

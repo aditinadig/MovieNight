@@ -29,7 +29,8 @@ import UserCard from "../movies/UserCard";
 import { Movie } from "@mui/icons-material";
 import MovieCard from "../movies/MovieCard";
 import MovieCardSelected from "../movies/MovieCardSelected";
-import { color } from "framer-motion";
+import { fetchUserByUID } from "../../services/usersService";
+import { set } from "date-fns";
 
 const EventForm = () => {
   const [eventName, setEventName] = useState("");
@@ -44,6 +45,7 @@ const EventForm = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
+  const [fetchedInvitees, setFetchedInvitees] = useState([]); // New state for storing fetched invitee data
 
   // Retrieve all registered users from Firestore, excluding those already invited
   const retrieveAllUsers = async () => {
@@ -55,9 +57,7 @@ const EventForm = () => {
           email: doc.data().email,
           UID: doc.data().UID,
         }))
-        .filter(
-          (user) => !invitees.some((invitee) => invitee.email === user.email)
-        ); // Exclude invitees
+        .filter((user) => !invitees.includes(user.UID));
       setAllUsers(users);
     } catch (error) {
       console.error("Error retrieving users:", error);
@@ -66,7 +66,7 @@ const EventForm = () => {
 
   useEffect(() => {
     retrieveAllUsers();
-  }, [invitees]); // Refresh the user list when invitees changes
+  }, [invitees]);
 
   // Inside EventForm component
   const handleSelectMovie = (movie) => {
@@ -78,7 +78,7 @@ const EventForm = () => {
         {
           title: movie.title,
           tmdb_id: movie.tmdb_id,
-          poster: `https://image.tmdb.org/t/p/w500${movie.poster_path}`, // Include poster path
+          poster: movie.poster_path, // Include poster path
         },
       ]);
     }
@@ -86,20 +86,13 @@ const EventForm = () => {
 
   const handleCreateEvent = async () => {
     const creatorId = auth.currentUser?.uid;
-    console.log("Creator ID:", creatorId);
-    console.log("Event Name:", eventName);
-    console.log("Event Date:", eventDate);
-    console.log("Event Time:", eventTime);
-    console.log("Invitees:", invitees);
-    console.log("Selected Movies:", selectedMovies);
     if (!creatorId || !eventName || !eventDate || !eventTime) {
       alert("Please fill in all required fields.");
       return;
     }
 
     try {
-      // Format date and time separately
-      const formattedDate = eventDate.toLocaleDateString("en-US"); // Adjust locale as needed
+      const formattedDate = eventDate.toLocaleDateString("en-US");
       const formattedTime = eventTime.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -107,15 +100,14 @@ const EventForm = () => {
 
       const eventRef = await addDoc(collection(db, "events"), {
         creator: creatorId,
-        date: formattedDate, // Store formatted date
-        time: formattedTime, // Store formatted time
+        date: formattedDate,
+        time: formattedTime,
         event_name: eventName,
-        invitees: invitees,
+        invitees: invitees, // Store only UIDs
         movies: selectedMovies,
         votes: [],
       });
 
-      console.log("Event created with ID: ", eventRef.id);
       setEventName("");
       setEventDate(null);
       setEventTime(null);
@@ -140,59 +132,42 @@ const EventForm = () => {
   };
   const handleCloseModal = () => setModalOpen(false); // Closes modal
 
-  const handleSelectUser = (user) => {
+  const handleSelectUser = async (user) => {
     setInvitees((prevInvitees) => {
-      const isAlreadyInvited = prevInvitees.some(
-        (invitee) => invitee.email === user.email
-      );
-
-      // Toggle the invitee: if they’re already invited, remove them; otherwise, add them
-      if (isAlreadyInvited) {
-        return prevInvitees.filter((invitee) => invitee.email !== user.email);
-      } else {
-        return [...prevInvitees, user];
-      }
+      const isAlreadyInvited = prevInvitees.includes(user.UID);
+      return isAlreadyInvited
+        ? prevInvitees.filter((uid) => uid !== user.UID)
+        : [...prevInvitees, user.UID];
     });
+
+    // Fetch user details immediately and add to fetchedInvitees
+    const userData = await fetchUserByUID(user.UID);
+    setFetchedInvitees((prevFetchedInvitees) => [
+      ...prevFetchedInvitees,
+      { ...userData, UID: user.UID },
+    ]);
   };
 
   const handleAddInvitee = async () => {
     if (inviteEmail.trim()) {
-      // Check if the email is already in the invitees list
-      const existingInviteeIndex = invitees.findIndex(
-        (invitee) => invitee.email === inviteEmail
+      const userQuery = query(
+        collection(db, "users"),
+        where("email", "==", inviteEmail)
       );
+      const querySnapshot = await getDocs(userQuery);
 
-      if (existingInviteeIndex !== -1) {
-        // Remove the existing invitee
-        setInvitees((prev) =>
-          prev.filter((invitee) => invitee.email !== inviteEmail)
-        );
-        setInviteEmail(""); // Clear the input
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        setInvitees((prev) => [...prev, userData.UID]);
+
+        // Fetch user details and add to fetchedInvitees
+        setFetchedInvitees((prevFetchedInvitees) => [
+          ...prevFetchedInvitees,
+          { ...userData, UID: userData.UID },
+        ]);
+        setInviteEmail("");
         setUserNotFound(false);
-        return;
-      }
-
-      // Otherwise, proceed to add the user if they exist in the database
-      try {
-        const usersRef = collection(db, "users");
-        const userQuery = query(usersRef, where("email", "==", inviteEmail));
-        const querySnapshot = await getDocs(userQuery);
-
-        if (!querySnapshot.empty) {
-          const userData = querySnapshot.docs[0].data(); // Extract user data
-
-          // Add user to invitees with name and email
-          setInvitees((prev) => [
-            ...prev,
-            { username: userData.username, email: inviteEmail },
-          ]);
-          setInviteEmail(""); // Clear the input
-          setUserNotFound(false);
-        } else {
-          setUserNotFound(true);
-        }
-      } catch (error) {
-        console.error("Error checking email:", error);
+      } else {
         setUserNotFound(true);
       }
     }
@@ -380,13 +355,22 @@ const EventForm = () => {
               overflowX: "auto", // Enable horizontal scrolling if needed
             }}
           >
-            {invitees.map((user, index) => (
-              <Box key={index} sx={{ minWidth: "150px", mt: 2 }}>
-                {" "}
-                {/* Adjust minWidth as needed */}
-                <UserCard username={user.username} email={user.email} />
+            {fetchedInvitees.length > 0 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 2,
+                  overflowX: "auto",
+                }}
+              >
+                {fetchedInvitees.map((user) => (
+                  <Box key={user.UID} sx={{ minWidth: "150px", mt: 2 }}>
+                    <UserCard username={user.username} email={user.email} />
+                  </Box>
+                ))}
               </Box>
-            ))}
+            )}
           </Box>
         )}
 

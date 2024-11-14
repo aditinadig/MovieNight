@@ -11,6 +11,7 @@ const AccentButton = ({ text, navigateTo, onClick, ...props }) => {
         padding: props.padding ? props.padding : "",
         width: props.width ? props.width : "100%",
         marginBottom: props.marginBottom ? props.marginBottom : "",
+        marginTop: props.marginTop ? props.marginTop : "",
       }}
     >
       {text}
