@@ -11,12 +11,14 @@ import {
   TextField,
   Slider,
   MenuItem,
+  Button,
+  Modal,
 } from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
 import Cookies from "js-cookie";
-import { Modal } from "antd";
 import AccentButton from "../form/AccentButton.jsx";
 import EventForm from "../event/EventForm.jsx";
+import OutlineButton from "../form/outlineButton.jsx";
 
 export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const [movies, setMovies] = useState([]);
@@ -33,7 +35,6 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const [surpriseMovies, setSurpriseMovies] = useState([]); // State for surprise movies
   const [isSurpriseModalVisible, setIsSurpriseModalVisible] = useState(false); // Modal visibility state
 
-
   const languageMap = {
     english: "en",
     korean: "ko",
@@ -42,6 +43,10 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     german: "de",
     japanese: "ja",
     chinese: "zh",
+  };
+
+  const handleModalClose = () => {
+    setIsSurpriseModalVisible(false);
   };
 
   const getLanguageCode = (lang) => {
@@ -116,7 +121,6 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const handlePopularityChange = (event) => setPopularity(event.target.value);
   const handleMoodChange = (event) => setMood(event.target.value); // Add mood handler
 
-
   // const handleSurpriseMe = () => {
   //   const shuffledMovies = [...movies].sort(() => 0.5 - Math.random());
   //   setSurpriseMovies(shuffledMovies.slice(0, 6));
@@ -135,7 +139,9 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     })
       .then((data) => {
         if (data && data.results) {
-          const shuffledMovies = [...data.results].sort(() => 0.5 - Math.random());
+          const shuffledMovies = [...data.results].sort(
+            () => 0.5 - Math.random()
+          );
           setSurpriseMovies(shuffledMovies.slice(0, 6)); // Display a random selection of 6 movies
           setIsSurpriseModalVisible(true); // Show the modal with the random movies
         } else {
@@ -147,7 +153,6 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
         setSurpriseMovies([]); // In case of error, set empty array
       });
   };
-  
 
   const mapGenres = (genreIds) => {
     if (!Array.isArray(genreIds) || genreIds.length === 0) {
@@ -178,21 +183,30 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
           height: "100vh",
         }}
       >
-
-<Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", gap:"1rem" }}>
-  <AccentButton
-    text={"Create Event"}
-    padding="0.7rem"
-    width="320px"  // You can keep the width or use 100% depending on your design
-  />
-  <AccentButton
-    text={"Surprise Me!"}
-    padding="0.7rem"
-    width="320px"
-    onClick={handleSurpriseMe}
-  />
-</Box>
-
+        {mode !== "choose-movies" ? (
+          <>
+            <Box
+              sx={{
+                width: "100%",
+                gap: "1rem",
+              }}
+            >
+              <AccentButton
+                text={"Create Event"}
+                padding="0.7rem"
+                width="320px" // You can keep the width or use 100% depending on your design
+                navigateTo="create-event"
+                marginBottom="1rem"
+              />
+              <OutlineButton
+                text={"Surprise Me!"}
+                padding="0.7rem"
+                width="320px"
+                onClick={handleSurpriseMe}
+              />
+            </Box>
+          </>
+        ) : null}
 
         <FiltersDrawer
           genres={genres}
@@ -285,71 +299,63 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
         </Box>
       </Box>
 
-      {/* Surprise Me Modal */}
       <Modal
-  title={null} // We’ll add a custom title inside the body
-  open={isSurpriseModalVisible}
-  onCancel={() => setIsSurpriseModalVisible(false)}
-  footer={null}
-  closable={false} // Removes the close button from the top right
-  centered
-  width={650} // Custom width for a comfortable view
-  height={500}
-  bodyStyle={{
-    backgroundColor: "var(--primary-bg)", 
-    color: "var(--primary-text)", 
-    padding: "2rem", // Adds padding around the content
-    borderRadius: "10px", // Rounds the modal corners
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)", // Subtle shadow for depth
-  }}
-  style={{
-    border: "2px solid var(--primary-bg)", // Custom border color for the modal
-    borderRadius: "10px", // Ensures both the content and border are rounded
-  }}
->
-<Box sx={{ display: "flex", justifyContent: "center", marginTop: "0.1rem", marginBottom: "1.25rem" }}>
-    <AccentButton
-      text="↺ Back"
-      onClick={() => setIsSurpriseModalVisible(false)}
-      padding="0.7rem 1.5rem"
-      sx={{
-        width: '50%',
-        backgroundColor: "#C49B9B",
-        color: "var(--primary-bg)",
-        padding: "1.5rem", // Reduced padding
-        borderRadius: "20px",
-        fontWeight: "bold",
-        transition: "background-color 0.3s ease", // Optional for smooth hover effect
-      "&:hover": {
-        backgroundColor: "var(--accent-hover-color)", // Optional hover effect
-      },
-      }}
-    />
-  </Box>
-  <Box sx={{ textAlign: "center", marginBottom: "1.5rem" }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold", color: "var(--accent-color)" }}>
-      Did we surprise you?
-    </Typography>
-    <Typography variant="subtitle1" sx={{ color: "var(--secondary-text)" }}>
-      Here are some movie picks just for you!
-    </Typography>
-  </Box>
-
-  <Grid container spacing={2}>
-    {surpriseMovies.map((movie) => (
-      <Grid item xs={12} sm={6} md={4} key={movie.id}>
-        <MovieCard
-          title={movie.title}
-          genre={mapGenres(movie.genre_ids)}
-          image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-        />
-      </Grid>
-    ))}
-  </Grid>
-
-  
-</Modal>
-
+        open={Boolean(isSurpriseModalVisible)}
+        onClose={handleModalClose}
+        sx={{
+          width: "70%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2, // Add padding to the modal
+          margin: "auto", // Center the modal
+        }}
+      >
+        <Box
+          sx={{
+            textAlign: "center",
+            p: 4,
+            backgroundColor: "var(--primary-bg)",
+            borderRadius: "10px",
+            boxShadow: 24,
+          }}
+        >
+          <Button
+            variant="link"
+            onClick={handleModalClose}
+            sx={{ mb: 2, color: "var(--highlight-color)" }}
+          >
+            Go back to Dashboard
+          </Button>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: "var(--accent-color)" }}
+          >
+            Did we surprise you?
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{ color: "var(--secondary-text)", mb: 3 }}
+          >
+            Here are some movie picks just for you!
+          </Typography>
+          <Grid container spacing={2} sx={{ padding: "0 16px" }}>
+            {surpriseMovies?.length > 0 &&
+              surpriseMovies.map((movie) => (
+                <Grid item xs={12} sm={6} md={4} key={movie.id}>
+                  <MovieCard
+                    mode={"surprise-movies"}
+                    title={movie.title}
+                    id={movie.id}
+                    genre={mapGenres(movie.genre_ids)}
+                    image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  />
+                </Grid>
+              ))}
+          </Grid>
+        </Box>
+      </Modal>
     </Box>
   );
 }
