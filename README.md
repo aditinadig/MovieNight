@@ -86,36 +86,8 @@ To add Material-UI icons to your project:
 npm install @mui/icons-material
 ```
 
-### 2. TailwindCSS (For Utility-First CSS)
 
-We use TailwindCSS alongside MUI for utility-first CSS styling.
-
-#### Installation:
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init
-```
-
-#### Configuration:
-Modify `tailwind.config.js` to specify your content paths:
-```js
-module.exports = {
-  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
-```
-
-In your CSS file, include the following lines to enable Tailwind:
-```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-### 3. Axios (For API Calls)
+### 2. Axios (For API Calls)
 
 We use Axios to handle API requests to external services, such as TMDB.
 
@@ -124,7 +96,7 @@ We use Axios to handle API requests to external services, such as TMDB.
 npm install axios
 ```
 
-### 4. ESLint (For Linting)
+### 3. ESLint (For Linting)
 
 ESLint is used for ensuring code quality and enforcing consistent coding styles.
 
@@ -138,7 +110,7 @@ npm install eslint --save-dev
 npx eslint --init
 ```
 
-### 5. Prettier (For Code Formatting)
+### 4. Prettier (For Code Formatting)
 
 Prettier is used to automatically format code to keep it clean and consistent.
 
@@ -157,7 +129,7 @@ Create a `.prettierrc` file with the following configuration:
 }
 ```
 
-### 6. Vite (For Faster Builds)
+### 5. Vite (For Faster Builds)
 
 Vite is used as the build tool in Astro for faster development.
 
@@ -166,7 +138,7 @@ Vite is used as the build tool in Astro for faster development.
 npm install vite
 ```
 
-### 7. Firebase Tools (For Firebase CLI)
+### 6. Firebase Tools (For Firebase CLI)
 
 Install Firebase CLI tools if you haven't already, for managing Firebase from the command line.
 
@@ -180,22 +152,13 @@ To initialize Firebase:
 firebase init
 ```
 
-### 8. Emotion (For CSS-in-JS with MUI)
+### 7. Emotion (For CSS-in-JS with MUI)
 
 Material-UI uses Emotion for styling, so ensure you have Emotion installed.
 
 #### Installation:
 ```bash
 npm install @emotion/react @emotion/styled
-```
-
-### 9. PostCSS (For CSS Processing)
-
-PostCSS is used alongside TailwindCSS to process and optimize your CSS.
-
-#### Installation:
-```bash
-npm install postcss
 ```
 
 ### Running the Project

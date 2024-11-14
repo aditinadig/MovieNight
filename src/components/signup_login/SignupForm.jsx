@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Link } from "@mui/material";
-import { createUserWithEmailAndPassword, onAuthStateChanged, getIdToken } from "firebase/auth";
-import { auth } from "../../../firebaseConfig";
+import { createUserWithEmailAndPassword, getIdToken } from "firebase/auth";
+import { collection, addDoc } from "firebase/firestore";
+import { auth, db } from "../../../firebaseConfig"; // Ensure db is imported
 import InputField from "../form/InputField.jsx";
 import OAuthButtons from "../form/OAuthButtons.jsx";
 import AccentButton from "../form/accentButton.jsx";
@@ -18,7 +19,6 @@ const SignUpForm = () => {
     const authToken = Cookies.get("authToken");
 
     if (authToken) {
-      // If no session, redirect to login page
       window.location.href = "/";
     }
   }, []);
@@ -41,6 +41,13 @@ const SignUpForm = () => {
       const token = await getIdToken(user);
       Cookies.set("authToken", token, { expires: 7, secure: true }); // Set for 7 days
 
+      // Add the user to Firestore `users` collection
+      await addDoc(collection(db, "users"), {
+        username: username,
+        email: user.email,
+        UID: user.uid,
+      });
+
       setUsername("");
       setEmail("");
       setPassword("");
@@ -54,7 +61,9 @@ const SignUpForm = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: "500px", margin: "auto" }}>
+    <Box 
+      sx={{ maxWidth: "500px", margin: "auto", cursor: loading ? "wait" : "default" }}
+    >
       <Typography variant="h4" sx={{ marginBottom: "2rem", fontWeight: 600 }}>
         Create an account
       </Typography>

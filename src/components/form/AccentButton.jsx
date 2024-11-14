@@ -6,7 +6,7 @@ const AccentButton = ({ text, navigateTo, onClick, ...props }) => {
       variant="contained"
       {...(navigateTo ? { href: navigateTo } : { onClick })}
       sx={{
-        backgroundColor: "#F1A7A0",
+        backgroundColor: "var(--accent-color)",
         color: "var(--primary-bg)",
         padding: props.padding ? props.padding : "",
         width: props.width ? props.width : "100%",

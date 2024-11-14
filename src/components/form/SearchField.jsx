@@ -13,9 +13,9 @@ const SearchField = ({ onSearchChange }) => {
 
   return (
     <Box sx={{ flexGrow: 1, 
-      borderColor:"#F1A7A0",
+      borderColor:"var(--accent-color)", // Replace with your desired border color
       "&:hover": {
-      borderColor: "#F1A7A0", // Replace with your desired hover border color
+      borderColor: "var(--accent-color)", // Replace with your desired hover border color
     },
     }}>
       <InputField

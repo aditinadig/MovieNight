@@ -42,12 +42,15 @@ const InputField = ({ label, type, id, required=false, ...props }) => {
         },
         "& .MuiOutlinedInput-root": {
           "& fieldset": {
+            color: "var(--accent-color)",
             borderColor: "var(--border)", // Default border color
           },
           "&:hover fieldset": {
+            color: "var(--accent-color)",
             borderColor: "var(--accent-color)", // Border color on hover
           },
           "&.Mui-focused fieldset": {
+            color: "var(--accent-color)",
             borderColor: "var(--accent-color) !important", // Border color when focused
             borderWidth: "2px", // Optional border width
           },

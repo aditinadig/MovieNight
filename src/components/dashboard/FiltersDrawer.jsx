@@ -1,5 +1,12 @@
 import React from "react";
-import { Box, Typography, TextField, Slider, MenuItem, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  Slider,
+  MenuItem,
+  Button,
+} from "@mui/material";
 
 const FiltersDrawer = ({
   genres = [],
@@ -28,31 +35,34 @@ const FiltersDrawer = ({
         //maxHeight: "75vh",  // Ensure the box doesn't exceed the viewport height
         mt: 4,
         mb: 8,
-        backgroundColor: "rgba(30, 30, 30, 0.9)", // Darker background with slight transparency
+        backgroundColor: "var(--secondary-bg)", // Darker background with slight transparency
         borderRadius: "var(--border-radius)",
         p: 4,
         color: "var(--primary-text)",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-        overflowY: "auto",       // Allow scrolling inside the sidebar if content overflows
+        overflowY: "auto", // Allow scrolling inside the sidebar if content overflows
         //position: "relative", // Sidebar position remains unchanged
         "&::-webkit-scrollbar": {
           width: "8px", // Scrollbar width
           height: "8px", // Horizontal scrollbar height
         },
         "&::-webkit-scrollbar-track": {
-          background: "#333", // Dark background for the track
+          background: "var(--card-bg)", // Dark background for the track
           borderRadius: "10px",
         },
         "&::-webkit-scrollbar-thumb": {
-          background: "#F1A7A0", // Gold color for the thumb
+          background: "var(--border)", // Gold color for the thumb
           borderRadius: "10px",
         },
         "&::-webkit-scrollbar-thumb:hover": {
-          background: "#C08081", // Lighter gold when hovering
+          background: "var(--border)", // Lighter gold when hovering
         },
       }}
     >
-      <Typography variant="h6" sx={{ mb: 0, fontWeight: "bold", color: "#F1A7A0" }}>
+      <Typography
+        variant="h5"
+        sx={{ mb: 2, fontWeight: "bold", color: "var(--accent-color)" }}
+      >
         Filters
       </Typography>
 
@@ -63,12 +73,12 @@ const FiltersDrawer = ({
         sx={{
           mt: 1,
           mb: 3,
-          padding: "3px 6px",
+          pr: 2,
+          pl: 2,
           fontSize: "0.5rem",
-          backgroundColor: "#C08081",
-          color: "#000000",
+          backgroundColor: "var(--border)",
           "&:hover": {
-            backgroundColor: "#F1A7A0",
+            backgroundColor: "var(--border)",
           },
         }}
       >
@@ -85,22 +95,28 @@ const FiltersDrawer = ({
         sx={{
           mb: 3,
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "#333", // Darker input background
+            color: "var(--primary-text)",
+            backgroundColor: "var(--card-bg)", // Darker input background
             borderRadius: "10px",
             fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
+            borderColor: "var(--border)",
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "var(--accent-color) !important",
+            },
           },
-          "& .MuiInputLabel-root": { color: "#FFFFFF" },
-          "& .MuiSelect-icon": { color: "#FFFFFF" },
+          "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
+          "& .MuiSelect-icon": { color: "var(--primary-text)" },
+
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--border)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--accent-color)",
           },
           "& .MuiSelect-select": {
-      color: "#FFFFFF", // White color for the selected text
-    },
+            color: "var(--primary-text)", // White color for the selected text
+          },
         }}
       >
         <MenuItem value="">Select Genre</MenuItem>
@@ -121,17 +137,26 @@ const FiltersDrawer = ({
         sx={{
           mb: 3,
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "#333",
+            color: "var(--primary-text)",
+            backgroundColor: "var(--card-bg)", // Darker input background
             borderRadius: "10px",
-            fontSize: "15px", 
+            fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
+            borderColor: "var(--border)",
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "var(--accent-color) !important",
+            },
           },
-          "& .MuiInputLabel-root": { color: "#FFFFFF" },
+          "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
+          "& .MuiSelect-icon": { color: "var(--primary-text)" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--border)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--accent-color)",
+          },
+          "& .MuiSelect-select": {
+            color: "var(--primary-text)", // White color for the selected text
           },
         }}
       />
@@ -144,24 +169,29 @@ const FiltersDrawer = ({
         onChange={handleMoodChange}
         fullWidth
         sx={{
-          mb: 4,
+          mb: 3,
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "#333", // Darker input background
+            color: "var(--primary-text)",
+            backgroundColor: "var(--card-bg)", // Darker input background
             borderRadius: "10px",
             fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
+            borderColor: "var(--border)",
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "var(--accent-color) !important",
+            },
           },
-          "& .MuiInputLabel-root": { color: "#FFFFFF" }, // White label color
-          "& .MuiSelect-icon": { color: "#FFFFFF" },
+          "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
+          "& .MuiSelect-icon": { color: "var(--primary-text)" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--border)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--accent-color)",
           },
           "& .MuiSelect-select": {
-      color: "#FFFFFF", // White color for the selected text
-    },
+            color: "var(--primary-text)", // White color for the selected text
+          },
         }}
       >
         <MenuItem value="">Select Mood</MenuItem>
@@ -173,7 +203,7 @@ const FiltersDrawer = ({
       </TextField>
 
       {/* Rating Filter */}
-      <Typography gutterBottom sx={{ color: "#FFFFFF", mb: 1 }}>
+      <Typography gutterBottom sx={{ color: "var(--primary-text)", mb: 1 }}>
         Rating
       </Typography>
       <Slider
@@ -184,15 +214,15 @@ const FiltersDrawer = ({
         max={10}
         sx={{
           mb: 2.5,
-          color: "#F1A7A0", 
+          color: "var(--accent-color)",
           "& .MuiSlider-thumb": {
-            backgroundColor: "#C08081",
+            backgroundColor: "var(--accent-color)",
             "&:hover": {
               boxShadow: "0px 0px 0px 8px rgba(255, 215, 0, 0.16)", // Gold glow
             },
           },
           "& .MuiSlider-rail": {
-            color: "#555",
+            color: "var(--border)",
           },
         }}
       />
@@ -204,20 +234,28 @@ const FiltersDrawer = ({
         onChange={handleLanguageChange}
         fullWidth
         sx={{
-          mt: 2,
           mb: 3,
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "#333",
+            color: "var(--primary-text)",
+            backgroundColor: "var(--card-bg)", // Darker input background
             borderRadius: "10px",
             fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
+            borderColor: "var(--border)",
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "var(--accent-color) !important",
+            },
           },
-          "& .MuiInputLabel-root": { color: "#FFFFFF" },
+          "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
+          "& .MuiSelect-icon": { color: "var(--primary-text)" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--border)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--accent-color)",
+          },
+          "& .MuiSelect-select": {
+            color: "var(--primary-text)", // White color for the selected text
           },
         }}
       />
@@ -230,31 +268,34 @@ const FiltersDrawer = ({
         onChange={handlePopularityChange}
         fullWidth
         sx={{
+          mb: 3,
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "#333",
+            color: "var(--primary-text)",
+            backgroundColor: "var(--card-bg)", // Darker input background
             borderRadius: "10px",
             fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
+            borderColor: "var(--border)",
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "var(--accent-color) !important",
+            },
           },
-          "& .MuiInputLabel-root": { color: "#FFFFFF" },
-          "& .MuiSelect-icon": { color: "#FFFFFF" },
+          "& .MuiInputLabel-root": { color: "var(--primary-text)" }, // Golden label color
+          "& .MuiSelect-icon": { color: "var(--primary-text)" },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--border)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#F1A7A0",
+            borderColor: "var(--accent-color)",
           },
           "& .MuiSelect-select": {
-      color: "#FFFFFF", // White color for the selected text
-    },
+            color: "var(--primary-text)", // White color for the selected text
+          },
         }}
       >
         <MenuItem value="popularity.desc">Most Popular</MenuItem>
         <MenuItem value="popularity.asc">Least Popular</MenuItem>
       </TextField>
-
-      
-
     </Box>
   );
 };

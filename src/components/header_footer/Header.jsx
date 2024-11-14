@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button, Stack, Box, Typography, Link, TextField } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebaseConfig"; // Ensure Firebase auth is imported
-import AccentButton from "../form/accentButton";
+import AccentButton from "../form/AccentButton";
 import OutlineButton from "../form/outlineButton";
 import LinkButton from "../form/LinkButton.jsx";
 import InputField from "../form/InputField.jsx";
@@ -42,8 +42,8 @@ export default function Header({ activePage }) {
         href="/"
         sx={{ color: "var(--primary-text)", textDecoration: "none" }}
       >
-        <Typography variant="h5" component="h1">
-          Movie<span style={{ color: "#F1A7A0" }}>Night</span>
+        <Typography variant="h5" component="h1" sx={{fontWeight: 500}}>
+          Movie<span style={{ color: "var(--highlight-color)" }}>Night</span>
         </Typography>
       </Link>
 
@@ -54,9 +54,8 @@ export default function Header({ activePage }) {
             {activePage === "dashboard" ? (
               <>
                 <LinkButton text="Home" navigateTo="/" />
-                <LinkButton text="Create Event" navigateTo="/event" />
-                <LinkButton text="Create Playlist" navigateTo="/playlist" />
-                <LinkButton text="Profile" navigateTo="/profile" />
+                <LinkButton text="Events" navigateTo="/all-events" />
+                <LinkButton text="Playlists" navigateTo="/all-playlists" />
                 <LinkButton text="Log Out" onClick={handleLogout} />
               </>
             ) : (

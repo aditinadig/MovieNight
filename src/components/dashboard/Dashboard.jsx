@@ -3,14 +3,22 @@ import { auth } from "../../../firebaseConfig";
 import { fetchAllMovies, fetchGenres } from "../../utils/tmdbApi.js";
 import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
-import { Box, Typography, Grid, Pagination, TextField, Slider, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Grid,
+  Pagination,
+  TextField,
+  Slider,
+  MenuItem,
+} from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
 import Cookies from "js-cookie";
 import { Modal } from "antd";
-import AccentButton from "../form/accentButton.jsx";
+import AccentButton from "../form/AccentButton.jsx";
 import EventForm from "../event/EventForm.jsx";
 
-export default function Dashboard() {
+export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [page, setPage] = useState(1);
@@ -27,13 +35,13 @@ export default function Dashboard() {
 
 
   const languageMap = {
-    "english": "en",
-    "korean": "ko",
-    "spanish": "es",
-    "french": "fr",
-    "german": "de",
-    "japanese": "ja",
-    "chinese": "zh",
+    english: "en",
+    korean: "ko",
+    spanish: "es",
+    french: "fr",
+    german: "de",
+    japanese: "ja",
+    chinese: "zh",
   };
 
   const getLanguageCode = (lang) => {
@@ -85,7 +93,16 @@ export default function Dashboard() {
         console.error("Error fetching movies:", error);
         setMovies([]);
       });
-  }, [page, searchQuery, releaseYear, selectedGenre, rating, language, popularity, mood]);
+  }, [
+    page,
+    searchQuery,
+    releaseYear,
+    selectedGenre,
+    rating,
+    language,
+    popularity,
+    mood,
+  ]);
 
   const handlePageChange = (event, value) => setPage(value);
   const handleSearchChange = (query) => {
@@ -138,14 +155,17 @@ export default function Dashboard() {
     }
     return genreIds
       .map(
-        (id) => genres.find((genre) => genre?.id === id)?.name || "Unknown Genre"
+        (id) =>
+          genres.find((genre) => genre?.id === id)?.name || "Unknown Genre"
       )
       .filter(Boolean)
       .join(", ");
   };
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "var(--primary-bg)" }}>
+    <Box
+      sx={{ display: "flex", minHeight: "100vh", bgcolor: "var(--primary-bg)" }}
+    >
       <Box
         sx={{
           width: "340px",
@@ -158,6 +178,7 @@ export default function Dashboard() {
           height: "100vh",
         }}
       >
+
 <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", gap:"1rem" }}>
   <AccentButton
     text={"Create Event"}
@@ -171,6 +192,7 @@ export default function Dashboard() {
     onClick={handleSurpriseMe}
   />
 </Box>
+
 
         <FiltersDrawer
           genres={genres}
@@ -214,9 +236,24 @@ export default function Dashboard() {
             movies.map((movie) => (
               <Grid item xs={12} sm={6} md={4} lg={2.4} key={movie.id}>
                 <MovieCard
+                  mode={mode}
                   title={movie.title}
+                  id={movie.id}
                   genre={mapGenres(movie.genre_ids)}
                   image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  selectedMovies={
+                    mode === "choose-movies" ? selectedMovies : []
+                  } // Pass selectedMovies only if mode is "choose-movies"
+                  onSelect={
+                    mode === "choose-movies"
+                      ? () =>
+                          onSelectMovie({
+                            title: movie.title,
+                            tmdb_id: movie.id,
+                            poster_path: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
+                          })
+                      : null
+                  } // Set onSelect only if mode is "choose-movies"
                 />
               </Grid>
             ))
