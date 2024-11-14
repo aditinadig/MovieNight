@@ -211,7 +211,11 @@ const EventForm = () => {
         my: 4,
       }}
     >
-      <Button variant="link" href="/dashboard" sx={{ mb: 2, color: "var(--highlight-color)" }}>
+      <Button
+        variant="link"
+        href="/dashboard"
+        sx={{ mb: 2, color: "var(--highlight-color)" }}
+      >
         Go back to Dashboard
       </Button>
 
@@ -523,6 +527,8 @@ const EventForm = () => {
         open={dashboardModalOpen}
         onClose={handleCloseDashboardModal}
         sx={{ overflowY: "auto", maxHeight: "700px" }}
+        aria-labelledby="movie-selection-modal-title" // Use aria-labelledby for accessibility
+        aria-describedby="movie-selection-modal-description" // Describe modal content
       >
         <Box
           sx={{
