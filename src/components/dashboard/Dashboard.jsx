@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [language, setLanguage] = useState("");
   const [popularity, setPopularity] = useState("");
   const [mood, setMood] = useState(""); // Add mood state
+  const [surpriseMovies, setSurpriseMovies] = useState([]); // State for surprise movies
+  const [isSurpriseModalVisible, setIsSurpriseModalVisible] = useState(false); // Modal visibility state
+
 
   const languageMap = {
     "english": "en",
@@ -96,6 +99,39 @@ export default function Dashboard() {
   const handlePopularityChange = (event) => setPopularity(event.target.value);
   const handleMoodChange = (event) => setMood(event.target.value); // Add mood handler
 
+
+  // const handleSurpriseMe = () => {
+  //   const shuffledMovies = [...movies].sort(() => 0.5 - Math.random());
+  //   setSurpriseMovies(shuffledMovies.slice(0, 6));
+  //   setIsSurpriseModalVisible(true);
+  // };
+
+  const handleSurpriseMe = () => {
+    // Fetch movies based on the same filters you are using on the main dashboard
+    fetchAllMovies(page, searchQuery, {
+      releaseYear,
+      selectedGenre,
+      rating,
+      language: getLanguageCode(language),
+      popularity,
+      mood, // Include mood filter as well
+    })
+      .then((data) => {
+        if (data && data.results) {
+          const shuffledMovies = [...data.results].sort(() => 0.5 - Math.random());
+          setSurpriseMovies(shuffledMovies.slice(0, 6)); // Display a random selection of 6 movies
+          setIsSurpriseModalVisible(true); // Show the modal with the random movies
+        } else {
+          setSurpriseMovies([]); // If no movies found, set empty array
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching surprise movies:", error);
+        setSurpriseMovies([]); // In case of error, set empty array
+      });
+  };
+  
+
   const mapGenres = (genreIds) => {
     if (!Array.isArray(genreIds) || genreIds.length === 0) {
       return "Unknown Genre";
@@ -122,8 +158,20 @@ export default function Dashboard() {
           height: "100vh",
         }}
       >
-        <AccentButton text={"Create Event"} padding="0.7rem"  width="320px"/> 
-        
+<Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", gap:"1rem" }}>
+  <AccentButton
+    text={"Create Event"}
+    padding="0.7rem"
+    width="320px"  // You can keep the width or use 100% depending on your design
+  />
+  <AccentButton
+    text={"Surprise Me!"}
+    padding="0.7rem"
+    width="320px"
+    onClick={handleSurpriseMe}
+  />
+</Box>
+
         <FiltersDrawer
           genres={genres}
           selectedGenre={selectedGenre}
@@ -199,6 +247,72 @@ export default function Dashboard() {
           />
         </Box>
       </Box>
+
+      {/* Surprise Me Modal */}
+      <Modal
+  title={null} // We’ll add a custom title inside the body
+  open={isSurpriseModalVisible}
+  onCancel={() => setIsSurpriseModalVisible(false)}
+  footer={null}
+  closable={false} // Removes the close button from the top right
+  centered
+  width={650} // Custom width for a comfortable view
+  height={500}
+  bodyStyle={{
+    backgroundColor: "var(--primary-bg)", 
+    color: "var(--primary-text)", 
+    padding: "2rem", // Adds padding around the content
+    borderRadius: "10px", // Rounds the modal corners
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)", // Subtle shadow for depth
+  }}
+  style={{
+    border: "2px solid var(--primary-bg)", // Custom border color for the modal
+    borderRadius: "10px", // Ensures both the content and border are rounded
+  }}
+>
+<Box sx={{ display: "flex", justifyContent: "center", marginTop: "0.1rem", marginBottom: "1.25rem" }}>
+    <AccentButton
+      text="↺ Back"
+      onClick={() => setIsSurpriseModalVisible(false)}
+      padding="0.7rem 1.5rem"
+      sx={{
+        width: '50%',
+        backgroundColor: "#C49B9B",
+        color: "var(--primary-bg)",
+        padding: "1.5rem", // Reduced padding
+        borderRadius: "20px",
+        fontWeight: "bold",
+        transition: "background-color 0.3s ease", // Optional for smooth hover effect
+      "&:hover": {
+        backgroundColor: "var(--accent-hover-color)", // Optional hover effect
+      },
+      }}
+    />
+  </Box>
+  <Box sx={{ textAlign: "center", marginBottom: "1.5rem" }}>
+    <Typography variant="h5" sx={{ fontWeight: "bold", color: "var(--accent-color)" }}>
+      Did we surprise you?
+    </Typography>
+    <Typography variant="subtitle1" sx={{ color: "var(--secondary-text)" }}>
+      Here are some movie picks just for you!
+    </Typography>
+  </Box>
+
+  <Grid container spacing={2}>
+    {surpriseMovies.map((movie) => (
+      <Grid item xs={12} sm={6} md={4} key={movie.id}>
+        <MovieCard
+          title={movie.title}
+          genre={mapGenres(movie.genre_ids)}
+          image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+        />
+      </Grid>
+    ))}
+  </Grid>
+
+  
+</Modal>
+
     </Box>
   );
 }

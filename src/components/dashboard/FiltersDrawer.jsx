@@ -17,6 +17,9 @@ const FiltersDrawer = ({
   handleMoodChange,
   resetFilters,
 }) => {
+
+  
+
   return (
     <Box
       sx={{
@@ -86,9 +89,8 @@ const FiltersDrawer = ({
             borderRadius: "10px",
             fontSize: "15px", // Smaller font size inside the input box
             minHeight: "10px",
-            borderColor: "#F1A7A0",
           },
-          "& .MuiInputLabel-root": { color: "#FFFFFF" }, // Golden label color
+          "& .MuiInputLabel-root": { color: "#FFFFFF" },
           "& .MuiSelect-icon": { color: "#FFFFFF" },
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "#F1A7A0",
