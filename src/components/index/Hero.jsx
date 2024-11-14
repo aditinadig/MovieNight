@@ -31,7 +31,7 @@ export default function Hero(props) {
         height: "70vh",
         color: "var(--primary-text)",
         overflow: "hidden",
-        backgroundImage: `url('src/assets/homepage-hero-background.jpg')`,
+        backgroundImage: `url('/homepage-hero-background.jpg')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
