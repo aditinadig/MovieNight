@@ -54,13 +54,13 @@ const LoginForm = () => {
         password
       );
       const token = await getIdToken(userCredential.user);
-      
+
       if (rememberMe) {
-        // Set cookie to expire in 7 days if 'Remember Me' is checked
-        Cookies.set("authToken", token, { expires: 7, secure: true });
+        // Persistent cookie with 7-day expiration
+        Cookies.set("authToken", token, { expires: 7, sameSite: 'strict' });
       } else {
-        // Set session-only cookie if 'Remember Me' is unchecked
-        Cookies.set("authToken", token, { secure: true });
+        // Session-only cookie without expiration
+        Cookies.set("authToken", token, { sameSite: 'strict' });
       }
 
       setEmail("");
