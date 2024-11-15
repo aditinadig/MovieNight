@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Link, Divider } from "@mui/material";
-import { signInWithEmailAndPassword, onAuthStateChanged, getIdToken } from "firebase/auth";
-import { auth } from "../../../firebaseConfig";
+import { Box, Typography, Link, Button, Stack } from "@mui/material";
+import { signInWithEmailAndPassword, getIdToken, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../../firebaseConfig"; // Add googleProvider
 import InputField from "../form/InputField.jsx";
-import OAuthButtons from "../form/OAuthButtons.jsx";
 import AccentButton from "../form/AccentButton.jsx";
 import Cookies from "js-cookie";
+import { FcGoogle } from 'react-icons/fc'; // Google icon from react-icons
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -15,10 +15,8 @@ const LoginForm = () => {
 
   useEffect(() => {
     const authToken = Cookies.get("authToken");
-
     if (authToken) {
-      // If no session, redirect to login page
-      window.location.href = "/";
+      window.location.href = "/"; // Redirect to home if already logged in
     }
   }, []);
 
@@ -48,6 +46,24 @@ const LoginForm = () => {
     }
   };
 
+  const handleOAuthLogin = async (provider) => {
+    try {
+      setLoading(true);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      const token = await getIdToken(user);
+      Cookies.set("authToken", token, { expires: 7, secure: true }); // Store in cookie for 7 days
+
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Error during OAuth login: ", error);
+      setError("Error during OAuth login. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box sx={{ maxWidth: "500px", margin: "auto" }}>
       <Typography variant="h4" sx={{ marginBottom: "1.5rem", fontWeight: 600, color: "var(--primary-text)" }}>
@@ -65,7 +81,26 @@ const LoginForm = () => {
 
       <AccentButton text="Login" padding="12px" onClick={handleLogin} disabled={loading} marginTop="1rem"/>
 
-      <OAuthButtons />
+      <Stack direction="row" spacing={2} justifyContent="center" mt={2}>
+        <Button
+          startIcon={<FcGoogle />}
+          variant="outlined"
+          onClick={() => handleOAuthLogin(googleProvider)}
+          disabled={loading}
+          sx={{
+            flexGrow: 1,
+            width: "100%",
+            borderRadius: "24px",
+            padding: "10px 30px",
+            color: "var(--primary-text)",
+            backgroundColor: "var(--primary-bg)",
+            border: "1px solid var(--border)",
+            textTransform: "none",
+          }}
+        >
+          Google
+        </Button>
+      </Stack>
 
       <Box sx={{ textAlign: "center", marginTop: "2rem" }}>
         <Typography variant="body2" sx={{ color: "var(--secondary-text)" }}>
