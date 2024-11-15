@@ -14,32 +14,108 @@ import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import Cookies from "js-cookie";
 import EventForm from "./EventForm";
 
+// Utility function for parsing date and time
+const parseDateTime = (dateStr, timeStr) => {
+  const [month, day, year] = dateStr.split("/").map(Number);
+  const [time, period] = timeStr.split(" ");
+  const [hours, minutes] = time.split(":").map(Number);
+  const adjustedHours =
+    period === "PM" && hours !== 12
+      ? hours + 12
+      : hours === 12 && period === "AM"
+      ? 0
+      : hours;
+
+  return new Date(year, month - 1, day, adjustedHours, minutes);
+};
+
+// Reusable FilterChip component
+const FilterChip = ({ label, isSelected, onClick }) => (
+  <Chip
+    label={label}
+    sx={{
+      color: "var(--primary-text)",
+      backgroundColor: isSelected ? "var(--disabled)" : "var(--card-bg)",
+      p: 2,
+      mr: 2,
+      "&:hover": { backgroundColor: "var(--disabled)" },
+    }}
+    onClick={onClick}
+  />
+);
+
+// Reusable EventModal component
+const EventModal = ({ open, event, userId, onVote, onClose }) => (
+  <Modal open={open} onClose={onClose}>
+    <VoteMovies
+      selectedEvent={event}
+      userId={userId}
+      handleMovieVote={onVote}
+      handleModalClose={onClose}
+    />
+  </Modal>
+);
+
 const AllEvents = () => {
+  const [events, setEvents] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [modalState, setModalState] = useState({
+    openModal: false,
+    selectedEvent: null,
+    editModalOpen: false,
+    editingEvent: null,
+  });
+  const [selectedChip, setSelectedChip] = useState("All Events");
+
+  const { openModal, selectedEvent, editModalOpen, editingEvent } = modalState;
+
+  // Authentication check
   useEffect(() => {
     const authToken = Cookies.get("authToken");
-
     if (!authToken) {
       window.location.href = "/login";
     }
   }, []);
 
-  const [events, setEvents] = useState([]); // Initialize events as an empty array
-  const [userId, setUserId] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedChip, setSelectedChip] = useState("All Events");
-  const [editingEvent, setEditingEvent] = useState(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-
-  const handleEdit = (event) => {
-    setEditingEvent(event);
-    setEditModalOpen(true);
+  // Fetch events based on type
+  const fetchEventsByType = async (fetchFunction) => {
+    if (!userId) return;
+    try {
+      const response = await fetchFunction(userId);
+      const sortedEvents = response.sort(
+        (a, b) => parseDateTime(b.date, b.time) - parseDateTime(a.date, a.time)
+      );
+      setEvents(sortedEvents);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
   };
 
-  const handleEditModalClose = () => {
-    setEditingEvent(null);
-    setEditModalOpen(false);
+  // Fetch events when userId changes
+  useEffect(() => {
+    const fetchUserEvents = () => fetchEventsByType(fetchEventsByUser);
+    fetchUserEvents();
+  }, [userId]);
+
+  // Auth state change listener
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setUserId(user ? user.uid : null);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Handle modal and chip states
+  const handleChipClick = (chipLabel, fetchFunction) => {
+    setSelectedChip(chipLabel);
+    fetchEventsByType(fetchFunction);
   };
+
+  const openEditModal = (event) =>
+    setModalState({ ...modalState, editModalOpen: true, editingEvent: event });
+
+  const closeEditModal = () =>
+    setModalState({ ...modalState, editModalOpen: false, editingEvent: null });
 
   const handleEventSave = (updatedEvent) => {
     setEvents((prevEvents) =>
@@ -47,112 +123,14 @@ const AllEvents = () => {
         event.id === updatedEvent.id ? updatedEvent : event
       )
     );
-    handleEditModalClose();
+    closeEditModal();
   };
 
-  const handleChipClick = (chipLabel, fetchFunction) => {
-    setSelectedChip(chipLabel);
-    fetchFunction();
-  };
+  const openVoteModal = (event) =>
+    setModalState({ ...modalState, openModal: true, selectedEvent: event });
 
-  const handleModalOpen = (event) => {
-    setSelectedEvent(event);
-    setOpenModal(true);
-
-    const eventDocRef = doc(db, "events", event.id);
-    const unsubscribe = onSnapshot(eventDocRef, (snapshot) => {
-      setSelectedEvent({ id: snapshot.id, ...snapshot.data() });
-    });
-
-    return () => unsubscribe(); // Cleanup listener on modal close
-  };
-
-  const handleModalClose = () => setOpenModal(false);
-
-  useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-      } else {
-        console.log("No user is logged in");
-      }
-    });
-    return () => unsubscribeAuth();
-  }, []);
-
-  const parseDateTime = (dateStr, timeStr) => {
-    const [month, day, year] = dateStr.split("/").map(Number);
-    const [time, period] = timeStr.split(" ");
-    const [hours, minutes] = time.split(":").map(Number);
-    const adjustedHours =
-      period === "PM" && hours !== 12
-        ? hours + 12
-        : hours === 12 && period === "AM"
-        ? 0
-        : hours;
-
-    return new Date(year, month - 1, day, adjustedHours, minutes);
-  };
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      if (!userId) return;
-      try {
-        const response = await fetchEventsByUser(userId);
-        const sortedEvents = response.sort(
-          (a, b) =>
-            parseDateTime(b.date, b.time) - parseDateTime(a.date, a.time)
-        );
-        setEvents(sortedEvents);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      }
-    };
-    fetchEvents();
-  }, [userId]);
-
-  const fetchEvents = async () => {
-    if (!userId) return;
-    try {
-      const response = await fetchEventsByUser(userId);
-      const sortedEvents = response.sort(
-        (a, b) => parseDateTime(b.date, b.time) - parseDateTime(a.date, a.time)
-      );
-      setEvents(sortedEvents);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
-
-  const fetchCreatorEvents = async () => {
-    if (!userId) return;
-    try {
-      const response = await fetchEventsByCreator(userId);
-      const sortedEvents = response.sort(
-        (a, b) => parseDateTime(b.date, b.time) - parseDateTime(a.date, a.time)
-      );
-      setEvents(sortedEvents);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
-
-  const fetchInviteeEvents = async () => {
-    if (!userId) return;
-    try {
-      const response = await fetchEventsByInvitee(userId);
-      const sortedEvents = response.sort(
-        (a, b) => parseDateTime(b.date, b.time) - parseDateTime(a.date, a.time)
-      );
-      setEvents(sortedEvents);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
-
-  const handleVote = (event) => {
-    handleModalOpen(event); // Ensure this calls handleModalOpen with the selected event
-  };
+  const closeVoteModal = () =>
+    setModalState({ ...modalState, openModal: false, selectedEvent: null });
 
   const handleMovieVote = async (movieId) => {
     if (!userId) return;
@@ -190,65 +168,34 @@ const AllEvents = () => {
         />
       </Box>
 
-      {/*Filter buttons*/}
+      {/* Filter Chips */}
       <Box sx={{ display: "flex" }}>
-        <Chip
+        <FilterChip
           label="All Events"
-          sx={{
-            color: "var(--primary-text)",
-            backgroundColor:
-              selectedChip === "All Events"
-                ? "var(--disabled)"
-                : "var(--card-bg)",
-            p: 2,
-            mr: 2,
-            "&:hover": {
-              backgroundColor: "var(--disabled)",
-            },
-          }}
-          onClick={() => handleChipClick("All Events", fetchEvents)}
+          isSelected={selectedChip === "All Events"}
+          onClick={() => handleChipClick("All Events", fetchEventsByUser)}
         />
-        <Chip
+        <FilterChip
           label="My Events"
-          sx={{
-            color: "var(--primary-text)",
-            backgroundColor:
-              selectedChip === "My Events"
-                ? "var(--disabled)"
-                : "var(--card-bg)",
-            p: 2,
-            mr: 2,
-            "&:hover": {
-              backgroundColor: "var(--disabled)",
-            },
-          }}
-          onClick={() => handleChipClick("My Events", fetchCreatorEvents)}
+          isSelected={selectedChip === "My Events"}
+          onClick={() => handleChipClick("My Events", fetchEventsByCreator)}
         />
-        <Chip
+        <FilterChip
           label="Invited Events"
-          sx={{
-            color: "var(--primary-text)",
-            backgroundColor:
-              selectedChip === "Invited Events"
-                ? "var(--disabled)"
-                : "var(--card-bg)",
-            p: 2,
-            "&:hover": {
-              backgroundColor: "var(--disabled)",
-            },
-          }}
-          onClick={() => handleChipClick("Invited Events", fetchInviteeEvents)}
+          isSelected={selectedChip === "Invited Events"}
+          onClick={() => handleChipClick("Invited Events", fetchEventsByInvitee)}
         />
       </Box>
 
+      {/* Event Grid */}
       <Grid container spacing={4} mt={2}>
         {events.length > 0 ? (
           events.map((event) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={event.id}>
               <EventCard
                 event={event}
-                handleVote={() => handleVote(event)} // Pass the specific event here
-                handleEdit={handleEdit}
+                handleVote={() => openVoteModal(event)}
+                handleEdit={openEditModal}
               />
             </Grid>
           ))
@@ -259,17 +206,16 @@ const AllEvents = () => {
         )}
       </Grid>
 
-      <Modal open={openModal} onClose={handleModalClose}>
-        <VoteMovies
-          selectedEvent={selectedEvent}
-          userId={userId}
-          handleMovieVote={handleMovieVote}
-          handleModalClose={handleModalClose}
-        />
-      </Modal>
+      {/* Modals */}
+      <EventModal
+        open={openModal}
+        event={selectedEvent}
+        userId={userId}
+        onVote={handleMovieVote}
+        onClose={closeVoteModal}
+      />
 
-      {/* Edit Event Modal */}
-      <Modal open={editModalOpen} onClose={handleEditModalClose}>
+      <Modal open={editModalOpen} onClose={closeEditModal}>
         <Box
           sx={{
             p: 4,
@@ -285,9 +231,9 @@ const AllEvents = () => {
         >
           {editingEvent && (
             <EventForm
-              initialEvent={editingEvent} // Pass the selected event for editing
-              onSave={handleEventSave} // Callback for saving the edited event
-              onCancel={handleEditModalClose} // Callback for closing the modal
+              initialEvent={editingEvent}
+              onSave={handleEventSave}
+              onCancel={closeEditModal}
             />
           )}
         </Box>
