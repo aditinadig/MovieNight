@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Link, Button, Stack } from "@mui/material";
 import { signInWithEmailAndPassword, getIdToken, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../../firebaseConfig"; // Add googleProvider
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { auth, db, googleProvider } from "../../../firebaseConfig"; // Add googleProvider
 import InputField from "../form/InputField.jsx";
 import AccentButton from "../form/AccentButton.jsx";
 import Cookies from "js-cookie";
@@ -54,6 +55,20 @@ const LoginForm = () => {
 
       const token = await getIdToken(user);
       Cookies.set("authToken", token, { expires: 7, secure: true }); // Store in cookie for 7 days
+
+      // Check if the user exists in Firestore
+      const usersRef = collection(db, "users");
+      const querySnapshot = await getDocs(
+        query(usersRef, where("UID", "==", user.uid))
+      );
+      if (querySnapshot.empty) {
+        // Add the user to Firestore if not already added
+        await addDoc(usersRef, {
+          username: user.displayName || "Anonymous",
+          email: user.email,
+          UID: user.uid,
+        });
+      }
 
       window.location.href = "/dashboard";
     } catch (error) {
