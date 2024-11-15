@@ -93,6 +93,12 @@ const EventForm = () => {
     }
   };
 
+  const handleRemoveMovie = (tmdb_id) => {
+    setSelectedMovies((prev) =>
+      prev.filter((movie) => movie.tmdb_id !== tmdb_id)
+    );
+  };
+
   const handleCreateEvent = async () => {
     const creatorId = auth.currentUser?.uid;
     if (!creatorId || !eventName || !eventDate || !eventTime) {
@@ -135,10 +141,12 @@ const EventForm = () => {
   const handleInviteClick = () => {
     setShowInviteInput(!showInviteInput); // Toggles the invite input field
   };
+
   const handleOpenModal = () => {
     setShowInviteInput(false); // Close the invite input field
     setModalOpen(true); // Opens modal for choosing a friend
   };
+
   const handleCloseModal = () => setModalOpen(false); // Closes modal
 
   const handleSelectUser = async (user) => {
@@ -180,6 +188,11 @@ const EventForm = () => {
         setUserNotFound(true);
       }
     }
+  };
+
+  const handleRemoveInvitee = (uid) => {
+    setInvitees((prev) => prev.filter((invitee) => invitee !== uid));
+    setFetchedInvitees((prev) => prev.filter((invitee) => invitee.UID !== uid));
   };
 
   const handleOpenDashboardModal = () => setDashboardModalOpen(true);
@@ -374,9 +387,13 @@ const EventForm = () => {
                 }}
               >
                 {fetchedInvitees.map((user) => (
-                  <Box key={user.UID} sx={{ minWidth: "150px", mt: 2 }}>
-                    <UserCard username={user.username} email={user.email} />
-                  </Box>
+                  <UserCard
+                    key={user.UID}
+                    username={user.username}
+                    email={user.email}
+                    onRemove={() => handleRemoveInvitee(user.UID)}
+                    showDeleteIcon={true} // Show delete icon on the form
+                  />
                 ))}
               </Box>
             )}
@@ -505,14 +522,13 @@ const EventForm = () => {
             overflowX: "auto", // Enable horizontal scrolling if needed
           }}
         >
-          {selectedMovies.map((movie, index) => (
-            <Box key={index} sx={{ width: "10rem" }}>
-              {" "}
-              {/* Adjust minWidth as needed */}
+          {selectedMovies.map((movie) => (
+            <Box key={movie.tmdb_id} sx={{ width: "10rem" }}>
               <MovieCardSelected
                 id={movie.tmdb_id}
                 title={movie.title}
                 image={movie.poster}
+                onRemove={handleRemoveMovie} // Ensure this prop is passed correctly
               />
             </Box>
           ))}

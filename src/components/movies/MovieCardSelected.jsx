@@ -1,7 +1,12 @@
 import React from "react";
-import { Card, CardMedia, CardContent, Typography, Box } from "@mui/material";
+import { Card, CardMedia, CardContent, Typography, Box, IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function MovieCardSelected({ id, title, image }) {
+export default function MovieCardSelected({ id, title, image, onRemove }) {
+  if (typeof onRemove !== 'function') {
+    console.error("onRemove prop is not a function:", onRemove);
+  }
+
   return (
     <Card
       sx={{
@@ -9,9 +14,10 @@ export default function MovieCardSelected({ id, title, image }) {
         color: "var(--primary-text)", // Text color
         borderRadius: "var(--border-radius)", // Border radius
         overflow: "hidden",
-        height: "8rem",
+        height: "11rem",
         display: "flex",
         flexDirection: "column", // Ensure content stacks vertically
+        position: "relative", // To position delete button
       }}
     >
       {/* Movie Image */}
@@ -20,7 +26,7 @@ export default function MovieCardSelected({ id, title, image }) {
         image={image}
         alt={title}
         sx={{
-          height: "1.5rem", // Set a fixed height for the image
+          height: "5rem", // Set a fixed height for the image
           objectFit: "cover", // Ensure the image covers the container without distortion
         }}
       />
@@ -44,6 +50,23 @@ export default function MovieCardSelected({ id, title, image }) {
           {title}
         </Typography>
       </CardContent>
+
+      {/* Delete Button */}
+      <IconButton
+        onClick={() => onRemove(id)} // Call onRemove with the movie ID
+        sx={{
+          position: "absolute",
+          top: 5,
+          right: 5,
+          color: "var(--accent-color)",
+          backgroundColor: "var(--primary-bg)",
+          "&:hover": {
+            backgroundColor: "var(--secondary-bg)",
+          },
+        }}
+      >
+        <DeleteIcon />
+      </IconButton>
     </Card>
   );
 }
