@@ -214,7 +214,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                 text={"Create Event"}
                 padding="0.7rem"
                 width="320px" // You can keep the width or use 100% depending on your design
-                navigateTo="create-event"
+                navigateTo="/create-event"
                 marginBottom="1rem"
               />
               <OutlineButton
