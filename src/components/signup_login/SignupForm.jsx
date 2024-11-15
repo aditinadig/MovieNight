@@ -39,7 +39,7 @@ const SignUpForm = () => {
 
       // Get and store the Firebase Auth ID Token in a cookie
       const token = await getIdToken(user);
-      Cookies.set("authToken", token, { secure: true }); // Set for 7 days
+      Cookies.set("authToken", token, { expires: 7, secure: true }); // Set for 7 days
 
       // Add the user to Firestore `users` collection
       const addDocResult = await addDoc(collection(db, "users"), {
