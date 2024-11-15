@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Link, Divider } from "@mui/material";
-import { signInWithEmailAndPassword, onAuthStateChanged, getIdToken } from "firebase/auth";
+import {
+  Box,
+  Typography,
+  Link,
+  Divider,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
+import {
+  signInWithEmailAndPassword,
+  getIdToken,
+} from "firebase/auth";
 import { auth } from "../../../firebaseConfig";
 import InputField from "../form/InputField.jsx";
 import OAuthButtons from "../form/OAuthButtons.jsx";
@@ -12,13 +22,18 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleCheckboxChange = (event) => {
+    setRememberMe(event.target.checked);
+  };
 
   useEffect(() => {
     const authToken = Cookies.get("authToken");
 
     if (authToken) {
-      // If no session, redirect to login page
-      window.location.href = "/";
+      // Redirect to the dashboard if the auth token is found
+      window.location.href = "/dashboard";
     }
   }, []);
 
@@ -33,9 +48,20 @@ const LoginForm = () => {
     }
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const token = await getIdToken(userCredential.user);
-      Cookies.set("authToken", token, { expires: 7, secure: true }); // Set cookie for 7 days
+      
+      if (rememberMe) {
+        // Set cookie to expire in 7 days if 'Remember Me' is checked
+        Cookies.set("authToken", token, { expires: 7, secure: true });
+      } else {
+        // Set session-only cookie if 'Remember Me' is unchecked
+        Cookies.set("authToken", token, { secure: true });
+      }
 
       setEmail("");
       setPassword("");
@@ -50,27 +76,82 @@ const LoginForm = () => {
 
   return (
     <Box sx={{ maxWidth: "500px", margin: "auto" }}>
-      <Typography variant="h4" sx={{ marginBottom: "1.5rem", fontWeight: 600, color: "var(--primary-text)" }}>
+      <Typography
+        variant="h4"
+        sx={{
+          marginBottom: "1.5rem",
+          fontWeight: 600,
+          color: "var(--primary-text)",
+        }}
+      >
         Welcome Back!
       </Typography>
 
-      <InputField label="Email" type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <InputField label="Password" type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} marginbottom="0.5rem" required />
+      <InputField
+        label="Email"
+        type="email"
+        id="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <InputField
+        label="Password"
+        type="password"
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        marginbottom="0.5rem"
+        required
+      />
 
       {error && (
-        <Typography variant="body2" sx={{ color: "var(--accent-color)", marginBottom: "1rem" }}>
+        <Typography
+          variant="body2"
+          sx={{ color: "var(--accent-color)", marginBottom: "1rem" }}
+        >
           {error}
         </Typography>
       )}
 
-      <AccentButton text="Login" padding="12px" onClick={handleLogin} disabled={loading} />
+      <AccentButton
+        text="Login"
+        padding="12px"
+        onClick={handleLogin}
+        disabled={loading}
+        marginTop="1rem"
+      />
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={rememberMe}
+            onChange={handleCheckboxChange}
+            sx={{
+              color: "var(--secondary-text)", // Unchecked color
+              "&.Mui-checked": {
+                color: "var(--highlight-color)", // Checked color
+              },
+            }}
+          />
+        }
+        label="Remember Me"
+        sx={{
+          color: "var(--primary-text)",
+          marginTop: "1rem" 
+        }}
+      />
 
       <OAuthButtons />
 
       <Box sx={{ textAlign: "center", marginTop: "2rem" }}>
         <Typography variant="body2" sx={{ color: "var(--secondary-text)" }}>
           Don’t have an account?{" "}
-          <Link href="/signup" underline="hover" sx={{ color: "var(--accent-color)" }}>
+          <Link
+            href="/signup"
+            underline="hover"
+            sx={{ color: "var(--accent-color)" }}
+          >
             Sign up
           </Link>
         </Typography>
