@@ -67,6 +67,7 @@ const VoteMovies = React.forwardRef((props, ref) => {
 
   const chartOptions = {
     responsive: true,
+    aspectRatio: 3,
     plugins: {
       legend: {
         display: false,
@@ -86,8 +87,11 @@ const VoteMovies = React.forwardRef((props, ref) => {
           font: {
             family: "Lexend Deca",
             weight: "400",
-            size: 10, // Adjust size as needed to fit within block
+            size: 10, // Adjust text size
           },
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: false,
           callback: function (value) {
             const label = this.getLabelForValue(value);
             const words = label.split(" ");
@@ -96,7 +100,6 @@ const VoteMovies = React.forwardRef((props, ref) => {
 
             words.forEach((word) => {
               if ((line + word).length <= 15) {
-                // Adjust to manage max width
                 line += (line ? " " : "") + word;
               } else {
                 formattedLabel.push(line);
@@ -110,15 +113,12 @@ const VoteMovies = React.forwardRef((props, ref) => {
 
             return formattedLabel;
           },
-          maxRotation: 0,
-          minRotation: 0,
-          autoSkip: false,
         },
         grid: {
           color: "rgba(255, 255, 255, 0.1)",
         },
-        categoryPercentage: 0.8, // Wider bar area for each category
-        barPercentage: 0.9, // Reduce the bar width to leave space for the label
+        categoryPercentage: 1.0, // Increase to use more space per category
+        barPercentage: 0.5, // Decrease to make bars thinner
       },
       y: {
         ticks: {
@@ -127,15 +127,18 @@ const VoteMovies = React.forwardRef((props, ref) => {
             family: "Lexend Deca",
             weight: "400",
           },
+          stepSize: 1, // Controls step size on y-axis
           callback: function (value) {
             return Number.isInteger(value) ? value : null;
           },
-          stepSize: 1,
         },
         grid: {
           color: "rgba(255, 255, 255, 0.1)",
         },
         beginAtZero: true,
+        min: 0,
+        max: Math.max(...chartData.datasets[0].data) + 1, // Adjust for padding above max
+        suggestedMax: Math.max(...chartData.datasets[0].data) + 1,
       },
     },
   };
@@ -145,13 +148,17 @@ const VoteMovies = React.forwardRef((props, ref) => {
       ref={ref}
       tabIndex={0}
       sx={{
-        p: 4,
+        py: 4,
+        px: 8,
         backgroundColor: "var(--primary-bg)",
         borderRadius: "8px",
-        maxWidth: 500,
-        mx: "auto",
-        mt: 4,
+        maxWidth: 700,
         color: "var(--primary-text)",
+        width: "90%", // To make it responsive
+        maxHeight: "70vh", // Limit height to viewport height
+        overflowY: "auto", // Enable vertical scrolling
+        mx: "auto",
+        my: "5%", // Center vertically on the page
       }}
     >
       <Button
@@ -165,7 +172,6 @@ const VoteMovies = React.forwardRef((props, ref) => {
         Vote for Movies
       </Typography>
 
-      {/* Bar chart for showing votes */}
       <Bar data={chartData} options={chartOptions} />
 
       <Box

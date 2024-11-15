@@ -63,7 +63,7 @@ const LoginForm = () => {
         </Typography>
       )}
 
-      <AccentButton text="Login" padding="12px" onClick={handleLogin} disabled={loading} />
+      <AccentButton text="Login" padding="12px" onClick={handleLogin} disabled={loading} marginTop="1rem"/>
 
       <OAuthButtons />
 

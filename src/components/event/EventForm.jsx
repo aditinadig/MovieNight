@@ -34,7 +34,6 @@ import { set } from "date-fns";
 import Cookies from "js-cookie";
 
 const EventForm = () => {
-
   useEffect(() => {
     const authToken = Cookies.get("authToken");
 
@@ -415,9 +414,12 @@ const EventForm = () => {
             p: 4,
             backgroundColor: "var(--primary-bg)",
             borderRadius: "8px",
-            maxWidth: 400,
+            maxWidth: 700,
+            width: "90%", // To make it responsive
+            maxHeight: "70vh", // Limit height to viewport height
+            overflowY: "auto", // Enable vertical scrolling
             mx: "auto",
-            mt: "10%",
+            my: "5%", // Center vertically on the page
           }}
         >
           <Typography
@@ -432,7 +434,7 @@ const EventForm = () => {
             ) : (
               allUsers
                 .reduce((rows, user, index) => {
-                  if (index % 2 === 0) rows.push([]);
+                  if (index % 4 === 0) rows.push([]); // Adjust for 4 items per row
                   rows[rows.length - 1].push(user);
                   return rows;
                 }, [])
@@ -448,7 +450,7 @@ const EventForm = () => {
                         (invitee) => invitee.email === user.email
                       );
                       return (
-                        <Grid item xs={12} sm={6} key={index}>
+                        <Grid item xs={6} sm={3} key={index}>
                           <Box
                             onClick={() => handleSelectUser(user)}
                             sx={{
