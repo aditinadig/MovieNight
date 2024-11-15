@@ -12,7 +12,15 @@ import {
   Alert,
   Button,
 } from "@mui/material";
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db, auth } from "../../../firebaseConfig";
 import InputField from "../form/InputField";
 import AccentButton from "../form/AccentButton";
@@ -33,7 +41,24 @@ import { fetchUserByUID } from "../../services/usersService";
 import { set } from "date-fns";
 import Cookies from "js-cookie";
 
-const EventForm = () => {
+const EventForm = ({ initialEvent, onSave, onCancel }) => {
+  const [eventName, setEventName] = useState(initialEvent?.event_name || "");
+  const [eventDate, setEventDate] = useState(
+    initialEvent?.date ? new Date(initialEvent.date) : null
+  );
+  const [eventTime, setEventTime] = useState(
+    initialEvent?.time
+      ? (() => {
+          const [hours, minutes] = initialEvent.time.split(":");
+          return new Date(1970, 0, 1, parseInt(hours), parseInt(minutes));
+        })()
+      : null
+  );
+  const [selectedMovies, setSelectedMovies] = useState(
+    initialEvent?.movies || []
+  );
+  const [invitees, setInvitees] = useState(initialEvent?.invitees || []);
+
   useEffect(() => {
     const authToken = Cookies.get("authToken");
 
@@ -42,11 +67,37 @@ const EventForm = () => {
     }
   }, []);
 
-  const [eventName, setEventName] = useState("");
-  const [eventDate, setEventDate] = useState(null);
-  const [eventTime, setEventTime] = useState(null);
-  const [selectedMovies, setSelectedMovies] = useState([]);
-  const [invitees, setInvitees] = useState([]);
+  // Save or update the event
+  const handleSave = async () => {
+    const updatedEvent = {
+      ...initialEvent,
+      event_name: eventName,
+      date: eventDate ? eventDate.toLocaleDateString("en-US") : null,
+      time: eventTime
+        ? eventTime.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : null,
+      movies: selectedMovies,
+      invitees,
+    };
+    if (initialEvent?.id) {
+      // Editing an existing event
+      const eventRef = doc(db, "events", initialEvent.id);
+      await updateDoc(eventRef, updatedEvent);
+    } else {
+      // Creating a new event
+      const creatorId = auth.currentUser?.uid;
+      await addDoc(collection(db, "events"), {
+        ...updatedEvent,
+        creator: creatorId,
+      });
+    }
+
+    onSave(updatedEvent);
+  };
+
   const [showInviteInput, setShowInviteInput] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
   const [userNotFound, setUserNotFound] = useState(false);
@@ -75,6 +126,22 @@ const EventForm = () => {
 
   useEffect(() => {
     retrieveAllUsers();
+  }, [invitees]);
+
+  useEffect(() => {
+    const fetchInviteeDetails = async () => {
+      const details = await Promise.all(
+        invitees.map(async (uid) => {
+          const userData = await fetchUserByUID(uid);
+          return { ...userData, UID: uid };
+        })
+      );
+      setFetchedInvitees(details);
+    };
+
+    if (invitees.length > 0) {
+      fetchInviteeDetails();
+    }
   }, [invitees]);
 
   // Inside EventForm component
@@ -150,19 +217,27 @@ const EventForm = () => {
   const handleCloseModal = () => setModalOpen(false); // Closes modal
 
   const handleSelectUser = async (user) => {
-    setInvitees((prevInvitees) => {
-      const isAlreadyInvited = prevInvitees.includes(user.UID);
-      return isAlreadyInvited
-        ? prevInvitees.filter((uid) => uid !== user.UID)
-        : [...prevInvitees, user.UID];
-    });
+    const isAlreadyInvited = invitees.includes(user.UID);
 
-    // Fetch user details immediately and add to fetchedInvitees
-    const userData = await fetchUserByUID(user.UID);
-    setFetchedInvitees((prevFetchedInvitees) => [
-      ...prevFetchedInvitees,
-      { ...userData, UID: user.UID },
-    ]);
+    // Update invitees based on current selection status
+    setInvitees((prevInvitees) =>
+      isAlreadyInvited
+        ? prevInvitees.filter((uid) => uid !== user.UID)
+        : [...prevInvitees, user.UID]
+    );
+
+    // Fetch user details immediately and update fetchedInvitees accordingly
+    if (!isAlreadyInvited) {
+      const userData = await fetchUserByUID(user.UID);
+      setFetchedInvitees((prevFetchedInvitees) => [
+        ...prevFetchedInvitees,
+        { ...userData, UID: user.UID },
+      ]);
+    } else {
+      setFetchedInvitees((prevFetchedInvitees) =>
+        prevFetchedInvitees.filter((invitee) => invitee.UID !== user.UID)
+      );
+    }
   };
 
   const handleAddInvitee = async () => {
@@ -177,11 +252,12 @@ const EventForm = () => {
         const userData = querySnapshot.docs[0].data();
         setInvitees((prev) => [...prev, userData.UID]);
 
-        // Fetch user details and add to fetchedInvitees
+        // Update fetchedInvitees with the new invitee's data immediately
         setFetchedInvitees((prevFetchedInvitees) => [
           ...prevFetchedInvitees,
           { ...userData, UID: userData.UID },
         ]);
+
         setInviteEmail("");
         setUserNotFound(false);
       } else {
@@ -191,8 +267,12 @@ const EventForm = () => {
   };
 
   const handleRemoveInvitee = (uid) => {
-    setInvitees((prev) => prev.filter((invitee) => invitee !== uid));
-    setFetchedInvitees((prev) => prev.filter((invitee) => invitee.UID !== uid));
+    setInvitees((prevInvitees) =>
+      prevInvitees.filter((invitee) => invitee !== uid)
+    );
+    setFetchedInvitees((prevFetchedInvitees) =>
+      prevFetchedInvitees.filter((invitee) => invitee.UID !== uid)
+    );
   };
 
   const handleOpenDashboardModal = () => setDashboardModalOpen(true);
@@ -224,7 +304,7 @@ const EventForm = () => {
           color: "var(--accent-color)",
         }}
       >
-        Create a Movie Night
+        {initialEvent ? "Edit Event" : "Create Event"}
       </Typography>
 
       <InputField
@@ -392,7 +472,7 @@ const EventForm = () => {
                     username={user.username}
                     email={user.email}
                     onRemove={() => handleRemoveInvitee(user.UID)}
-                    showDeleteIcon={true} // Show delete icon on the form
+                    showDeleteIcon={true} // Show delete icon only if it's not an edit mode
                   />
                 ))}
               </Box>
@@ -579,8 +659,8 @@ const EventForm = () => {
       {/* Create Event Button */}
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
         <AccentButton
-          text="Create Event"
-          onClick={handleCreateEvent}
+          text={initialEvent ? "Edit Event" : "Create Event"}
+          onClick={initialEvent ? handleSave : handleCreateEvent}
           padding="12px 24px"
           sx={{
             backgroundColor: "#C08081",
@@ -600,7 +680,7 @@ const EventForm = () => {
           severity="success"
           sx={{ width: "100%" }}
         >
-          Event created successfully!
+          Event {initialEvent ? " saved " : " created "} successfully!
         </Alert>
       </Snackbar>
     </Box>

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -6,21 +6,25 @@ import {
   CardMedia,
   Grid,
   Box,
+  IconButton,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import AccentButton from "../form/AccentButton";
 import { fetchUserByUID } from "../../services/usersService";
+import { db, auth } from "../../../firebaseConfig";
 
-const EventCard = ({ event, handleVote }) => {
+const EventCard = ({ event, handleVote, handleEdit }) => {
   const [inviteeDetails, setInviteeDetails] = useState([]);
   const [creatorDetails, setCreatorDetails] = useState({});
 
-  // Fetch invitee details on component mount
+  const currentUserId = auth.currentUser?.uid;
+
   useEffect(() => {
     const fetchInviteeDetails = async () => {
       const details = await Promise.all(
         event.invitees.map(async (inviteeUID) => {
           const userData = await fetchUserByUID(inviteeUID);
-          return { uid: inviteeUID, ...userData }; // include UID for reference
+          return { uid: inviteeUID, ...userData };
         })
       );
       setInviteeDetails(details);
@@ -32,24 +36,36 @@ const EventCard = ({ event, handleVote }) => {
 
     fetchInviteeDetails();
     fetchCreatorDetails();
-  }, [event]); // Run this effect when invitees array changes
+  }, [event]);
 
   return (
     <Card
       sx={{
-        backgroundColor: "var(--secondary-bg)", // Background color
-        color: "var(--primary-text)", // Text color
-        borderRadius: "var(--border-radius)", // Border radius
+        backgroundColor: "var(--secondary-bg)",
+        color: "var(--primary-text)",
+        borderRadius: "var(--border-radius)",
         overflow: "hidden",
         height: "100%",
         display: "flex",
-        flexDirection: "column", // Ensure content stacks vertically
+        flexDirection: "column",
       }}
     >
       <CardContent>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: "600" }}>
-          {event.event_name}
-        </Typography>
+        <Box display="flex" justifyContent="space-between">
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: "600" }}>
+            {event.event_name}
+          </Typography>
+          {currentUserId === event.creator ? (
+            <>
+              <IconButton
+                onClick={() => handleEdit(event)}
+                sx={{ color: "var(--accent-color)" }}
+              >
+                <EditIcon />
+              </IconButton>
+            </>
+          ) : null}
+        </Box>
         <Typography variant="body2" sx={{ color: "var(--secondary-text)" }}>
           Date: {event.date}
         </Typography>
@@ -98,7 +114,7 @@ const EventCard = ({ event, handleVote }) => {
                 mt: 1,
                 "&.MuiGrid-item": {
                   padding: 0,
-                }
+                },
               }}
             >
               <CardMedia
@@ -108,7 +124,7 @@ const EventCard = ({ event, handleVote }) => {
                   "https://image.tmdb.org/t/p/w500https://image.tmdb.org/t/p/w500",
                   "https://image.tmdb.org/t/p/w500"
                 )}
-                alt={movie.title} 
+                alt={movie.title}
               />
               <Typography
                 variant="caption"

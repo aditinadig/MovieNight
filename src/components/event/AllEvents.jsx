@@ -11,7 +11,8 @@ import EventCard from "../movies/EventCard";
 import AccentButton from "../form/AccentButton";
 import VoteMovies from "../vote/VoteMovies";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
-import Cookies from "js-cookie";    
+import Cookies from "js-cookie";
+import EventForm from "./EventForm";
 
 const AllEvents = () => {
   useEffect(() => {
@@ -27,6 +28,27 @@ const AllEvents = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedChip, setSelectedChip] = useState("All Events");
+  const [editingEvent, setEditingEvent] = useState(null);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const handleEdit = (event) => {
+    setEditingEvent(event);
+    setEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setEditingEvent(null);
+    setEditModalOpen(false);
+  };
+
+  const handleEventSave = (updatedEvent) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === updatedEvent.id ? updatedEvent : event
+      )
+    );
+    handleEditModalClose();
+  };
 
   const handleChipClick = (chipLabel, fetchFunction) => {
     setSelectedChip(chipLabel);
@@ -128,7 +150,9 @@ const AllEvents = () => {
     }
   };
 
-  const handleVote = (event) => handleModalOpen(event);
+  const handleVote = (event) => {
+    handleModalOpen(event); // Ensure this calls handleModalOpen with the selected event
+  };
 
   const handleMovieVote = async (movieId) => {
     if (!userId) return;
@@ -221,7 +245,11 @@ const AllEvents = () => {
         {events.length > 0 ? (
           events.map((event) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={event.id}>
-              <EventCard event={event} handleVote={handleVote} />
+              <EventCard
+                event={event}
+                handleVote={() => handleVote(event)} // Pass the specific event here
+                handleEdit={handleEdit}
+              />
             </Grid>
           ))
         ) : (
@@ -238,6 +266,31 @@ const AllEvents = () => {
           handleMovieVote={handleMovieVote}
           handleModalClose={handleModalClose}
         />
+      </Modal>
+
+      {/* Edit Event Modal */}
+      <Modal open={editModalOpen} onClose={handleEditModalClose}>
+        <Box
+          sx={{
+            p: 4,
+            backgroundColor: "var(--primary-bg)",
+            borderRadius: "8px",
+            maxWidth: "800px",
+            width: "90%",
+            mx: "auto",
+            my: "5%",
+            height: "80vh",
+            overflowY: "scroll",
+          }}
+        >
+          {editingEvent && (
+            <EventForm
+              initialEvent={editingEvent} // Pass the selected event for editing
+              onSave={handleEventSave} // Callback for saving the edited event
+              onCancel={handleEditModalClose} // Callback for closing the modal
+            />
+          )}
+        </Box>
       </Modal>
     </Box>
   );
