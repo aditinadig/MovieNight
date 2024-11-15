@@ -196,6 +196,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
       setSelectedMovies([]);
       setInvitees([]);
       setSnackbarOpen(true); // Show success message
+      window.location.href = '/all-events';
     } catch (error) {
       console.error("Error creating event: ", error);
     }
@@ -290,10 +291,10 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
     >
       <Button
         variant="link"
-        href="/dashboard"
-        sx={{ mb: 2, color: "var(--highlight-color)" }}
+        href="/all-events"
+        sx={{ mb: 2, color: "var(--highlight-color)", p: 0 }}
       >
-        Go back to Dashboard
+        Go to All Events
       </Button>
 
       <Typography
