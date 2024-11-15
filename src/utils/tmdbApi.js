@@ -1,10 +1,10 @@
 const API_KEY = "84bf7fb1a1d6008ee499b3bc270c23a2";
 
 const moodToGenreAndKeywords = {
-  "happy": { genres: ["35"], keywords: ["comedy", "family"] }, // Comedy
-  "romantic": { genres: ["10749"], keywords: ["romance", "love"] }, // Romance
+"happy": { genres: ["35"], keywords: ["comedy"]},
+  "romantic": { genres: ["10749"], keywords: ["romance"] }, // Romance
   "exciting": { genres: ["28"], keywords: ["action"] }, // Action
-  "thrilling": { genres: ["53"], keywords: ["thriller", "horror"] }, // Thriller
+  "thrilling": { genres: ["53"], keywords: ["thriller"] }, // Thriller
   "sad": { genres: ["18"], keywords: ["drama"] }, // Drama
 };
 
