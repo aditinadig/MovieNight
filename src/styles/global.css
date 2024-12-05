@@ -1,5 +1,5 @@
 /* global.css */
-@import url('https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&family=Delius&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Agdasima:wght@400;700&family=Delius&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend+Deca:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 :root {
   --primary-bg: #191919;
@@ -13,7 +13,7 @@
   --overlay-bg: #191919db;
   --border:  #2a2929;
   --border-radius: 0.8rem;
-  --font: "Lexend Deca", serif;;
+  --font: "Nunito Sans", sans-serif;
 
 }
 
@@ -36,6 +36,7 @@ body {
   font-family: var(--font) !important;
   font-size: 0.9rem !important;
   border-radius: var(--border-radius) !important;
+  font-weight: 700 !important;
 }
 
 .MuiButton-root:hover {
