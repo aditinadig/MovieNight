@@ -23,7 +23,6 @@ ChartJS.register(
 const VoteMovies = React.forwardRef((props, ref) => {
   const { selectedEvent, userId, handleMovieVote, handleModalClose } = props;
 
-  // Retrieve CSS variable values for colors
   const highlightColor = getComputedStyle(document.documentElement)
     .getPropertyValue("--highlight-color")
     .trim();
@@ -31,7 +30,6 @@ const VoteMovies = React.forwardRef((props, ref) => {
     .getPropertyValue("--secondary-text")
     .trim();
 
-  // Prepare data for the chart
   const chartData = useMemo(() => {
     const labels = selectedEvent?.movies.map((movie) => movie.title) || [];
     const votes =
@@ -39,7 +37,6 @@ const VoteMovies = React.forwardRef((props, ref) => {
         movie.votedBy ? movie.votedBy.length : 0
       ) || [];
 
-    // Determine the maximum vote count
     const maxVotes = Math.max(...votes);
 
     return {
@@ -53,7 +50,7 @@ const VoteMovies = React.forwardRef((props, ref) => {
           ),
           borderColor: highlightColor,
           borderWidth: 2,
-          hoverBackgroundColor: "rgba(134, 210, 147, 0.8)", // Accent color with opacity
+          hoverBackgroundColor: "rgba(134, 210, 147, 0.8)",
           hoverBorderColor: "var(--accent-color)",
         },
       ],
@@ -63,7 +60,7 @@ const VoteMovies = React.forwardRef((props, ref) => {
   const primaryTextColor =
     getComputedStyle(document.documentElement)
       .getPropertyValue("--primary-text")
-      .trim() || "#ffffff"; // Fallback to white
+      .trim() || "#ffffff";
 
   const chartOptions = {
     responsive: true,
@@ -87,11 +84,8 @@ const VoteMovies = React.forwardRef((props, ref) => {
           font: {
             family: "Lexend Deca",
             weight: "400",
-            size: 10, // Adjust text size
+            size: 10,
           },
-          maxRotation: 0,
-          minRotation: 0,
-          autoSkip: false,
           callback: function (value) {
             const label = this.getLabelForValue(value);
             const words = label.split(" ");
@@ -117,8 +111,6 @@ const VoteMovies = React.forwardRef((props, ref) => {
         grid: {
           color: "rgba(255, 255, 255, 0.1)",
         },
-        categoryPercentage: 1.0, // Increase to use more space per category
-        barPercentage: 0.5, // Decrease to make bars thinner
       },
       y: {
         ticks: {
@@ -127,7 +119,7 @@ const VoteMovies = React.forwardRef((props, ref) => {
             family: "Lexend Deca",
             weight: "400",
           },
-          stepSize: 1, // Controls step size on y-axis
+          stepSize: 1,
           callback: function (value) {
             return Number.isInteger(value) ? value : null;
           },
@@ -136,8 +128,6 @@ const VoteMovies = React.forwardRef((props, ref) => {
           color: "rgba(255, 255, 255, 0.1)",
         },
         beginAtZero: true,
-        min: 0,
-        max: Math.max(...chartData.datasets[0].data) + 1, // Adjust for padding above max
         suggestedMax: Math.max(...chartData.datasets[0].data) + 1,
       },
     },
@@ -149,22 +139,31 @@ const VoteMovies = React.forwardRef((props, ref) => {
       tabIndex={0}
       sx={{
         py: 4,
-        px: 8,
+        px: 6,
         backgroundColor: "var(--primary-bg)",
-        borderRadius: "8px",
+        borderRadius: "12px",
         maxWidth: 700,
         color: "var(--primary-text)",
-        width: "90%", // To make it responsive
-        maxHeight: "70vh", // Limit height to viewport height
-        overflowY: "auto", // Enable vertical scrolling
+        width: "90%",
+        maxHeight: "70vh",
+        overflowY: "auto",
         mx: "auto",
-        my: "5%", // Center vertically on the page
+        my: "5%",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          transform: "scale(1.01)",
+        },
       }}
     >
       <Button
-        variant="link"
+        variant="text"
         onClick={handleModalClose}
-        sx={{ mt: 3, color: "var(--secondary-text)", p: 0 }}
+        sx={{
+          mt: 2,
+          color: "var(--secondary-text)",
+          "&:hover": { textDecoration: "underline" },
+        }}
       >
         Go back
       </Button>
@@ -180,7 +179,7 @@ const VoteMovies = React.forwardRef((props, ref) => {
           justifyContent: "center",
           flexWrap: "wrap",
           gap: 2,
-          mt: 3,
+          mt: 4,
         }}
       >
         {selectedEvent?.movies.map((movie) => (
@@ -191,13 +190,19 @@ const VoteMovies = React.forwardRef((props, ref) => {
             sx={{
               borderColor: highlightColor,
               color: highlightColor,
+              borderRadius: "16px",
+              px: 3,
+              py: 1.5,
+              textTransform: "none",
+              transition: "all 0.2s ease",
               "&:hover": {
-                backgroundColor: "var(--primary-text)",
+                backgroundColor: "var(--highlight-bg)",
+                transform: "scale(1.05)",
               },
               "&.Mui-disabled": {
                 borderColor: "var(--disabled)",
                 color: "var(--disabled)",
-              }, // Apply secondary color when disabled
+              },
             }}
             variant="outlined"
           >
