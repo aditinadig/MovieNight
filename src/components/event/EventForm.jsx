@@ -291,16 +291,43 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
 
   //const handleUserSearchChange = (query) => {};
 
+  // const handleUserSearchChange = (query) => {
+  //   if (query === "") {
+  //     setAllUsers(originalAllUsers); // Reset to original list
+  //   } else {
+  //     const filteredUsers = originalAllUsers.filter((user) =>
+  //       user.username.toLowerCase().includes(query.toLowerCase())
+  //     );
+  //     setAllUsers(filteredUsers);
+  //   }
+  // };
+
+  // const handleUserSearchChange = (query) => {
+  //   if (query === "") {
+  //     // Reset to the full list when the search bar is cleared
+  //     setAllUsers(originalAllUsers);
+  //   } else {
+  //     // Filter users based on the query
+  //     const filteredUsers = originalAllUsers.filter((user) =>
+  //       user.username.toLowerCase().includes(query.toLowerCase())
+  //     );
+  //     setAllUsers(filteredUsers);
+  //   }
+  // };
+  
   const handleUserSearchChange = (query) => {
     if (query === "") {
-      setAllUsers(originalAllUsers); // Reset to original list
+      // Reset to the full list when the search bar is cleared
+      setAllUsers(originalAllUsers);
     } else {
+      // Filter users based on the query, checking if the username starts with the query
       const filteredUsers = originalAllUsers.filter((user) =>
-        user.username.toLowerCase().includes(query.toLowerCase())
+        user.username.toLowerCase().startsWith(query.toLowerCase())
       );
       setAllUsers(filteredUsers);
     }
   };
+  
 
   return (
     <Box
