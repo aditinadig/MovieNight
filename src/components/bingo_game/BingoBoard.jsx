@@ -20,6 +20,8 @@ const BingoBoard = () => {
   const [showModal, setShowModal] = useState(false);
   const [anonymousUsername, setAnonymousUsername] = useState("");
 
+
+
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const eventIdFromURL = queryParams.get("eventId");
@@ -35,9 +37,7 @@ const BingoBoard = () => {
         setShowModal(false);
       } else {
         setIsLoggedIn(false);
-        if (!anonymousUsername) {
-          setShowModal(true); // Show modal only if no anonymousUsername is set
-        }
+        window.location.href = "/login";
       }
     });
 
@@ -63,7 +63,10 @@ const BingoBoard = () => {
 
           fetchPlayerNames(Object.keys(gameData.active_players));
         } else {
-          console.warn("Game document does not exist for Event ID:", eventIdFromURL);
+          console.warn(
+            "Game document does not exist for Event ID:",
+            eventIdFromURL
+          );
         }
       });
 

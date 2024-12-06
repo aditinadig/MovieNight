@@ -104,6 +104,9 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
   const [fetchedInvitees, setFetchedInvitees] = useState([]); // New state for storing fetched invitee data
+  const [originalAllUsers, setOriginalAllUsers] = useState([]); // Backup of the full user list
+
+
 
   // Retrieve all registered users from Firestore, excluding those already invited
   const retrieveAllUsers = async () => {
@@ -119,6 +122,8 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
       const currentUserUID = auth.currentUser?.uid;
       const filteredUsers = users.filter((user) => user.UID !== currentUserUID);
       setAllUsers(filteredUsers);
+      setOriginalAllUsers(filteredUsers); // Save the original list
+
     } catch (error) {
       console.error("Error retrieving users:", error);
     }
@@ -281,7 +286,48 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const handleOpenDashboardModal = () => setDashboardModalOpen(true);
   const handleCloseDashboardModal = () => setDashboardModalOpen(false);
 
-  const handleUserSearchChange = (query) => {};
+  const [searchTerm, setSearchTerm] = useState("");  // Track search input
+
+
+  //const handleUserSearchChange = (query) => {};
+
+  // const handleUserSearchChange = (query) => {
+  //   if (query === "") {
+  //     setAllUsers(originalAllUsers); // Reset to original list
+  //   } else {
+  //     const filteredUsers = originalAllUsers.filter((user) =>
+  //       user.username.toLowerCase().includes(query.toLowerCase())
+  //     );
+  //     setAllUsers(filteredUsers);
+  //   }
+  // };
+
+  // const handleUserSearchChange = (query) => {
+  //   if (query === "") {
+  //     // Reset to the full list when the search bar is cleared
+  //     setAllUsers(originalAllUsers);
+  //   } else {
+  //     // Filter users based on the query
+  //     const filteredUsers = originalAllUsers.filter((user) =>
+  //       user.username.toLowerCase().includes(query.toLowerCase())
+  //     );
+  //     setAllUsers(filteredUsers);
+  //   }
+  // };
+  
+  const handleUserSearchChange = (query) => {
+    if (query === "") {
+      // Reset to the full list when the search bar is cleared
+      setAllUsers(originalAllUsers);
+    } else {
+      // Filter users based on the query, checking if the username starts with the query
+      const filteredUsers = originalAllUsers.filter((user) =>
+        user.username.toLowerCase().startsWith(query.toLowerCase())
+      );
+      setAllUsers(filteredUsers);
+    }
+  };
+  
 
   return (
     <Box
@@ -305,7 +351,6 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         variant="h3"
         sx={{
           fontWeight: "600",
-          marginBottom: 4,
           color: "var(--accent-color)",
         }}
       >
@@ -314,7 +359,6 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
 
       <Box
         sx={{
-          backgroundColor: "var(--secondary-bg)",
           borderRadius: "var(--border-radius)",
           p: 6,
         }}
@@ -322,6 +366,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         <InputField
           label="Event Name"
           value={eventName}
+          required={true}
           onChange={(e) => setEventName(e.target.value)}
         />
 
@@ -329,6 +374,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
           <DatePicker
             label="Event Date"
             value={eventDate}
+            required={true}
             onChange={(newValue) => {
               const today = new Date();
               if (newValue >= today.setHours(0, 0, 0, 0)) {
@@ -356,11 +402,11 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
                   borderColor: "var(--border)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "var(--secondary-bg)",
+                  borderColor: "var(--border)",
                   color: "var(--primary-text)",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "var(--secondary-bg) !important",
+                  borderColor: "var(--border) !important",
                   color: "var(--primary-text)",
                   borderWidth: "2px",
                 },
@@ -389,6 +435,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
           <MobileTimePicker
             label="Event Time"
             value={eventTime}
+            required={true}
             onChange={(newValue) => {
               const selectedDate = eventDate;
               const today = new Date();
@@ -424,12 +471,12 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
                   borderColor: "var(--border)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "var(--secondary-bg)",
                   color: "var(--primary-text)",
+                  borderColor: "var(--border)",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "var(--secondary-bg) !important",
-                  color: "var(--primary-text)",
+                  borderColor: "var(--primary-text) !important",
+                  color: "var(--border)",
                   borderWidth: "2px",
                 },
               },
@@ -444,16 +491,10 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         <Box mt={4} sx={{ marginBottom: 4 }}>
           <Box display="flex" alignItems="center" mt={2}>
             <Box display="flex" alignItems="center">
-              <Typography variant="h5" mr={2}>
+              <Typography variant="h5" mr={4}>
                 Invite Friends
               </Typography>
             </Box>
-            <OutlineButton
-              text="Add Email ID"
-              onClick={handleInviteClick}
-              width="25%"
-              margin="0.5rem"
-            />
             <OutlineButton
               text="Choose Friends"
               onClick={handleOpenModal}
