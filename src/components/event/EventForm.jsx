@@ -356,11 +356,12 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
                   borderColor: "var(--border)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "var(--accent-color)",
+                  borderColor: "var(--secondary-bg)",
+                  color: "var(--primary-text)",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "var(--accent-color) !important",
-                  color: "var(--accent-color)",
+                  borderColor: "var(--secondary-bg) !important",
+                  color: "var(--primary-text)",
                   borderWidth: "2px",
                 },
               },
@@ -423,11 +424,12 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
                   borderColor: "var(--border)",
                 },
                 "&:hover fieldset": {
-                  borderColor: "var(--accent-color)",
+                  borderColor: "var(--secondary-bg)",
+                  color: "var(--primary-text)",
                 },
                 "&.Mui-focused fieldset": {
-                  borderColor: "var(--accent-color) !important",
-                  color: "var(--accent-color)",
+                  borderColor: "var(--secondary-bg) !important",
+                  color: "var(--primary-text)",
                   borderWidth: "2px",
                 },
               },
