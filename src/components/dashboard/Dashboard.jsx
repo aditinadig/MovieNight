@@ -9,6 +9,7 @@ import {
   fetchAllPlaylists,
   createPlaylist,
   updatePlaylist,
+  fetchPlaylistNotContainingMovie,
 } from "../../services/playlistsService"; // Import your service
 import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
@@ -23,10 +24,16 @@ import {
   CardMedia,
   CardContent,
   Fade,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Link,
 } from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
 import AccentButton from "../form/AccentButton.jsx";
 import OutlineButton from "../form/outlineButton.jsx";
+import CreatePlaylist from "../playlists/CreatePlaylist.jsx";
 
 export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   // Track user authentication state
@@ -59,9 +66,11 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const [isSurpriseModalVisible, setIsSurpriseModalVisible] = useState(false); // Modal visibility state
   const [selectedMovie, setSelectedMovie] = useState(null); // Track the selected movie for modal
   const [openMovieModal, setOpenMovieModal] = useState(false); // State to control modal visibility
+  const [openCreatePlaylistModal, setOpenCreatePlaylistModal] = useState(false); // State for create playlist modal
 
   // Add state for playlists and modal visibility
   const [playlists, setPlaylists] = useState([]); // List of user playlists
+  const [playlistsMenu, setPlaylistsMenu] = useState([]); // List of playlists for dropdown
   const [selectedPlaylist, setSelectedPlaylist] = useState(null); // Selected playlist for movie addition
   const [openPlaylistModal, setOpenPlaylistModal] = useState(false); // Modal open state
   const [currentMovie, setCurrentMovie] = useState(null); // Track the current movie for playlist addition
@@ -85,6 +94,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
         .then((movieDetails) => {
           if (movieDetails) {
             setCurrentMovie(movieDetails); // Set the fetched movie details
+            handleSetPlaylistMenu(movieDetails.id);
           } else {
             console.error("Movie details not found for ID:", movie);
           }
@@ -95,6 +105,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     } else {
       // If movie is already an object, directly set it
       setCurrentMovie(movie);
+      handleSetPlaylistMenu(movie); // Fetch playlists not containing
     }
     setOpenPlaylistModal(true); // Open the modal
   };
@@ -121,19 +132,15 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
 
     if (currentMovie) {
       setLoading(true); // Show loading indicator
-      console.log("Adding movie to playlist:", currentMovie);
       const playlistToUpdate = playlists.find(
         (playlist) => playlist.id === selectedPlaylist
       );
-      console.log("Playlist to update:", playlistToUpdate);
       if (playlistToUpdate) {
         // Ensure that movies is always an array, even if it's undefined
         const updatedMovies = [
           ...(playlistToUpdate.movies || []),
           currentMovie,
         ]; // Default to an empty array if movies is undefined
-
-        console.log("Updated movies:", updatedMovies);
 
         await updatePlaylist(selectedPlaylist, { movies: updatedMovies }); // Update Firestore
 
@@ -143,8 +150,6 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
             ? { ...playlist, movies: updatedMovies } // Update the current playlist with new movie
             : playlist
         );
-
-        console.log("Updated playlists:", updatedPlaylists);
 
         setPlaylists(updatedPlaylists); // Set the updated playlists state
 
@@ -158,18 +163,12 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     }
   };
 
-  // Handle creating a new playlist
-  const handleCreatePlaylist = async () => {
-    const playlistName = prompt("Enter the name of the new playlist");
-    if (playlistName) {
-      const newPlaylist = await createPlaylist({
-        name: playlistName,
-        movies: [],
-      });
-      setPlaylists([...playlists, newPlaylist]);
-      setSelectedPlaylist(newPlaylist.id); // Automatically select the newly created playlist
-      handlePlaylistModalClose();
-    }
+  const handleSetPlaylistMenu = (movieId) => {
+    fetchPlaylistNotContainingMovie(movieId)
+      .then((playlists) => {
+        setPlaylistsMenu(playlists);
+      })
+      .catch((error) => console.error("Error fetching playlists:", error));
   };
 
   const languageMap = {
@@ -314,6 +313,20 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
       .join(", ");
   };
 
+  const handleOpenCreatePlaylistModal = () => {
+    setOpenCreatePlaylistModal(true);
+  };
+
+  const handleCloseCreatePlaylistModal = () => {
+    setOpenCreatePlaylistModal(false);
+  };
+
+  const handleRefreshPlaylistsMenu = () => {
+    if (currentMovie) {
+      handleSetPlaylistMenu(currentMovie.id); // Re-fetch playlists not containing the movie
+    }
+  };
+
   return (
     <Box
       sx={{ display: "flex", minHeight: "100vh", bgcolor: "var(--primary-bg)" }}
@@ -371,58 +384,6 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
           handleMoodChange={handleMoodChange} // Pass mood handler to FiltersDrawer
           resetFilters={resetFilters}
         />
-
-        {/* Playlist Modal */}
-        <Modal
-          open={openPlaylistModal}
-          onClose={handlePlaylistModalClose}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            sx={{
-              backgroundColor: "white",
-              padding: 2,
-              borderRadius: "10px",
-              width: "50%",
-            }}
-          >
-            <Box sx={{ mt: 0 }}>
-              <Typography>Select a Playlist</Typography>
-              <select
-                value={selectedPlaylist || ""}
-                onChange={(e) => setSelectedPlaylist(e.target.value)}
-                style={{ width: "100%", padding: "8px", borderRadius: "5px" }}
-              >
-                <option value="">--Select a Playlist--</option>
-                {playlists
-                  .filter(
-                    (playlist) => playlist.userId === auth.currentUser?.uid
-                  ) // Filter playlists by current user's ID
-                  .map((playlist) => (
-                    <option key={playlist.id} value={playlist.id}>
-                      {playlist.name}
-                    </option>
-                  ))}
-              </select>
-            </Box>
-
-            <Button
-              onClick={() => {
-                addMovieToPlaylist(); // Call the function to add the movie
-                handlePlaylistModalClose(); // Close the modal after adding
-              }}
-              sx={{ mt: 4 }}
-              variant="contained"
-              color="primary"
-            >
-              Add Movie to Playlist
-            </Button>
-          </Box>
-        </Modal>
       </Box>
 
       <Box
@@ -562,6 +523,178 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
         </Box>
       </Modal>
 
+      {/* Playlist Modal */}
+      <Modal
+        open={openPlaylistModal}
+        onClose={handlePlaylistModalClose}
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backdropFilter: "blur(8px)", // Adds frosted-glass background effect
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: "var(--card-bg)", // Dark mode card background
+            padding: 4,
+            borderRadius: "var(--border-radius)", // Use global border-radius
+            width: { xs: "90%", sm: "50%" },
+            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.4)", // Subtle shadow
+            color: "var(--primary-text)", // Primary text color for dark mode
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              textAlign: "center",
+              mb: 2,
+              fontWeight: "bold",
+              color: "var(--primary-text)", // Align heading color with dark mode
+            }}
+          >
+            Select a Playlist
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              mb: 1,
+              textAlign: "center",
+              color: "var(--secondary-text)", // Secondary text for description
+            }}
+          >
+            Choose a playlist to add the movie to.
+          </Typography>
+
+          <Box sx={{ textAlign: "center" }}>
+            <Link
+              onClick={handleOpenCreatePlaylistModal} // Call function on link click
+              sx={{
+                padding: "10px 20px",
+                fontWeight: "bold",
+                color: "var(--accent-pink)", // Use accent color for button
+                textDecoration: "underline",
+                textDecorationColor: "var(--accent-pink)", // Underline color
+                "&:hover": {
+                  color: "var(--highlight-pink)", // Highlight color on hover
+                  textDecorationColor: "var(--highlight-pink)", // Highlight underline
+                },
+              }}
+            >
+              Create Playlist
+            </Link>
+          </Box>
+
+          {playlistsMenu.length === 0 ? (
+            <>
+              {" "}
+              <Typography
+                variant="body2"
+                sx={{
+                  textAlign: "center",
+                  mt: 2,
+                  mb: 4,
+                  color: "var(--secondary-text)", // Secondary text for description
+                }}
+              >
+                There are no playlists without the movie present.
+              </Typography>{" "}
+            </>
+          ) : (
+            <>
+              {" "}
+              <FormControl fullWidth sx={{ mb: 3, mt: 2 }}>
+                <InputLabel
+                  id="playlist-select-label"
+                  sx={{
+                    color: "var(--secondary-text)", // Normal label color
+                    "&.Mui-focused": {
+                      color: "var(--primary-text)", // Change label color on focus
+                    },
+                  }}
+                >
+                  Playlist
+                </InputLabel>
+                <Select
+                  labelId="playlist-select-label"
+                  value={selectedPlaylist || ""}
+                  onChange={(e) => setSelectedPlaylist(e.target.value)}
+                  sx={{
+                    backgroundColor: "var(--secondary-bg)", // Input background
+                    color: "var(--primary-text)", // Input text color
+                    borderRadius: "var(--border-radius)", // Global border radius
+                    ".MuiOutlinedInput-notchedOutline": {
+                      borderColor: "var(--border)", // Input border color
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "var(--border)", // Input border color
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "var(--border)", // Input border color
+                    },
+                    "& .MuiSelect-icon": {
+                      color: "var(--primary-text)", // Dropdown arrow color
+                    },
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        backgroundColor: "var(--card-bg)", // Dropdown menu background
+                        color: "var(--primary-text)", // Dropdown text color
+                        "& .MuiMenuItem-root:hover": {
+                          backgroundColor: "var(--secondary-bg)", // Hover background
+                        },
+                      },
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>--Select a Playlist--</em>
+                  </MenuItem>
+                  {playlistsMenu
+                    .filter(
+                      (playlistsMenu) =>
+                        playlistsMenu.userId === auth.currentUser?.uid
+                    )
+                    .map((playlistsMenu) => (
+                      <MenuItem
+                        key={playlistsMenu.id}
+                        value={playlistsMenu.id}
+                        sx={{
+                          backgroundColor: "var(--card-bg)",
+                          "&:hover": { backgroundColor: "var(--secondary-bg)" },
+                        }}
+                      >
+                        {playlistsMenu.name}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>{" "}
+              <Box sx={{ textAlign: "center" }}>
+                <Button
+                  onClick={() => {
+                    addMovieToPlaylist();
+                    handlePlaylistModalClose();
+                  }}
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    padding: "10px 20px",
+                    fontWeight: "bold",
+                    backgroundColor: "var(--accent-pink)", // Use accent color for button
+                    "&:hover": {
+                      backgroundColor: "var(--highlight-pink)", // Highlight color on hover
+                    },
+                  }}
+                >
+                  Add Movie to Playlist
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
+      </Modal>
+
       {/* Movie Details Modal */}
       <Modal
         open={openMovieModal}
@@ -623,10 +756,8 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                       variant="h4"
                       gutterBottom
                       sx={{
-                        color: "white",
-                        textAlign: "center",
+                        color: "var(--primary-text)",
                         fontWeight: "bold",
-                        textTransform: "uppercase", // Added emphasis
                         letterSpacing: 1,
                       }}
                     >
@@ -635,7 +766,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                     <Typography
                       id="movie-modal-description"
                       variant="body1"
-                      color="white"
+                      color="var(--primary-text)"
                       sx={{
                         textAlign: "justify",
                         mb: 2,
@@ -648,7 +779,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                     <Typography
                       variant="h6"
                       sx={{
-                        color: "white",
+                        color: "var(--primary-text)",
                         mb: 1,
                         fontWeight: "bold",
                         display: "flex",
@@ -663,7 +794,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                     <Typography
                       variant="h6"
                       sx={{
-                        color: "white",
+                        color: "var(--primary-text)",
                         mb: 2,
                         fontWeight: "bold",
                         display: "flex",
@@ -692,12 +823,12 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                         sx={{
                           px: 4,
                           py: 1.5,
-                          backgroundColor: "#ff4081", // Custom pink color
-                          color: "white",
+                          backgroundColor: "var(--accent-pink)", // Custom pink color
+                          color: "(--primary-text)",
                           fontWeight: "bold",
                           textTransform: "uppercase",
                           "&:hover": {
-                            backgroundColor: "#ff79a1", // Lighter pink on hover
+                            backgroundColor: "var(--highlight-pink)", // Lighter pink on hover
                           },
                         }}
                       >
@@ -710,6 +841,30 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
             )}
           </Card>
         </Fade>
+      </Modal>
+
+      {/* Create Playlist Modal */}
+      <Modal
+        open={openCreatePlaylistModal}
+        onClose={handleCloseCreatePlaylistModal}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)", // Centers the modal vertically and horizontally
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            p: 4, // Padding around the content
+          }}
+        >
+          <CreatePlaylist
+            onPlaylistCreated={handleRefreshPlaylistsMenu} // Refresh playlists after creation
+            onClose={handleCloseCreatePlaylistModal} // Close the modal
+          />
+        </Box>
       </Modal>
     </Box>
   );

@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { TextField, IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-const InputField = ({ label, type, id, required=false, ...props }) => {
+const InputField = ({ label, type, id, required = false, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
   const inputRef = useRef(null); // Reference for the input element
 
@@ -27,8 +27,8 @@ const InputField = ({ label, type, id, required=false, ...props }) => {
     <TextField
       required={required}
       fullWidth
-      label={type === "search" ? "": label}
-      placeholder={type === "search" ? label: ""}
+      label={type === "search" ? "" : label}
+      placeholder={type === "search" ? label : ""}
       type={type === "password" ? (showPassword ? "text" : "password") : type}
       id={id}
       inputRef={inputRef} // Attach the inputRef to this TextField
@@ -42,17 +42,17 @@ const InputField = ({ label, type, id, required=false, ...props }) => {
         },
         "& .MuiOutlinedInput-root": {
           "& fieldset": {
-            color: "var(--accent-color)",
-            borderColor: "var(--border)", // Default border color
+            color: "var(--primary-text)",
+            borderColor: "var(--border)", // Default border color updated to secondary-bg
           },
           "&:hover fieldset": {
-            color: "var(--accent-color)",
-            borderColor: "var(--accent-color)", // Border color on hover
+            color: "var(--primary-text)",
+            borderColor: "var(--secondary-bg)", // Hover border effect
           },
           "&.Mui-focused fieldset": {
-            color: "var(--accent-color)",
-            borderColor: "var(--accent-color) !important", // Border color when focused
-            borderWidth: "2px", // Optional border width
+            color: "var(--primary-text)",
+            borderColor: "var(--secondary-bg)", // Focus border color
+            borderWidth: "2px", // Optional border width for focus
           },
         },
         "& input:-webkit-autofill": {
@@ -74,8 +74,7 @@ const InputField = ({ label, type, id, required=false, ...props }) => {
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
             </InputAdornment>
-          ) : 
-          type === "search" ? (
+          ) : type === "search" ? (
             <InputAdornment position="end">
               <IconButton
                 edge="end"

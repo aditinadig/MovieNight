@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -7,7 +7,9 @@ import {
   Typography,
   Box,
   Link,
+  Modal,
 } from "@mui/material";
+import SpotifySearch from "../spotify/SpotifySearch.jsx";
 
 export default function MovieCard({
   id,
@@ -21,6 +23,7 @@ export default function MovieCard({
   handlePlaylistModalOpen,
 }) {
   const isSelected = selectedMovies.some((movie) => movie.tmdb_id === id);
+  const [openSpotifySearch, setOpenSpotifySearch] = useState(false);
 
   return (
     <Card
@@ -141,8 +144,45 @@ export default function MovieCard({
           >
             Learn More
           </Link>
+          <br />
+          <Link
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click event
+              setOpenSpotifySearch(true); // Call the onLearnMore function
+            }}
+            sx={{
+              marginTop: "1rem",
+              cursor: "pointer",
+              fontSize: "0.8rem",
+              textDecoration: "none",
+              color: "var(--accent-color)",
+            }}
+          >
+            Listen to the album on Spotify
+          </Link>
         </Box>
       </CardContent>
+      <Modal
+        open={openSpotifySearch}
+        onClose={() => setOpenSpotifySearch(false)}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)", // Centers the modal vertically and horizontally
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            p: 4, // Padding around the content
+            backgroundColor: "var(--primary-bg)",
+            borderRadius: "var(--border-radius)",
+          }}
+        >
+          <SpotifySearch albumName={title} />
+        </Box>
+      </Modal>
     </Card>
   );
 }
