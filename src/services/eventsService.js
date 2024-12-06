@@ -91,4 +91,9 @@ export const voteForMovie = async (eventId, movieId, userId) => {
   } catch (error) {
     console.error("Error voting for movie:", error);
   }
-};
+}
+
+
+  
+
+

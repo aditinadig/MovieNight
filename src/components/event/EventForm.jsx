@@ -5,8 +5,6 @@ import {
   IconButton,
   Grid,
   List,
-  ListItem,
-  ListItemText,
   Modal,
   Snackbar,
   Alert,
@@ -34,12 +32,10 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Dashboard from "../dashboard/Dashboard";
 import UserCard from "../movies/UserCard";
-import { Movie } from "@mui/icons-material";
-import MovieCard from "../movies/MovieCard";
 import MovieCardSelected from "../movies/MovieCardSelected";
 import { fetchUserByUID } from "../../services/usersService";
-import { set } from "date-fns";
 import Cookies from "js-cookie";
+import SearchField from "../form/SearchField";
 
 const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const [eventName, setEventName] = useState(initialEvent?.event_name || "");
@@ -196,7 +192,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
       setSelectedMovies([]);
       setInvitees([]);
       setSnackbarOpen(true); // Show success message
-      window.location.href = '/all-events';
+      window.location.href = "/all-events";
     } catch (error) {
       console.error("Error creating event: ", error);
     }
@@ -279,6 +275,11 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const handleOpenDashboardModal = () => setDashboardModalOpen(true);
   const handleCloseDashboardModal = () => setDashboardModalOpen(false);
 
+  const handleUserSearchChange = (query) => {
+    
+  };
+
+
   return (
     <Box
       sx={{
@@ -292,7 +293,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
       <Button
         variant="link"
         href="/all-events"
-        sx={{ mb: 2, color: "var(--highlight-color)", p: 0 }}
+        sx={{ mb: 2, color: "var(--primary-text)", p: 0 }}
       >
         Go to All Events
       </Button>
@@ -308,202 +309,258 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         {initialEvent ? "Edit Event" : "Create Event"}
       </Typography>
 
-      <InputField
-        label="Event Name"
-        value={eventName}
-        onChange={(e) => setEventName(e.target.value)}
-      />
+      <Box
+        sx={{
+          backgroundColor: "var(--secondary-bg)",
+          borderRadius: "var(--border-radius)",
+          p: 6,
+        }}
+      >
+        <InputField
+          label="Event Name"
+          value={eventName}
+          onChange={(e) => setEventName(e.target.value)}
+        />
 
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker
-          label="Event Date"
-          value={eventDate}
-          onChange={(newValue) => {
-            const today = new Date();
-            if (newValue >= today.setHours(0, 0, 0, 0)) {
-              setEventDate(newValue);
-              setEventTime(null); // Reset time if date changes
-            } else {
-              alert("Please select a current or future date.");
-            }
-          }}
-          minDate={new Date()} // Prevent selection of past dates
-          sx={{
-            marginRight: 2,
-            "& .MuiInputBase-root": {
-              color: "var(--primary-text)",
-              borderRadius: "var(--border-radius)",
-              backgroundColor: "var(--primary-bg)",
-            },
-            "& .MuiFormLabel-root": {
-              color: "var(--primary-text)",
-            },
-            "& .MuiOutlinedInput-root": {
-              color: "var(--primary-text)",
-              "& fieldset": {
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Event Date"
+            value={eventDate}
+            onChange={(newValue) => {
+              const today = new Date();
+              if (newValue >= today.setHours(0, 0, 0, 0)) {
+                setEventDate(newValue);
+                setEventTime(null); // Reset time if date changes
+              } else {
+                alert("Please select a current or future date.");
+              }
+            }}
+            minDate={new Date()} // Prevent selection of past dates
+            sx={{
+              marginRight: 2,
+              "& .MuiInputBase-root": {
                 color: "var(--primary-text)",
-                borderColor: "var(--border)",
+                borderRadius: "var(--border-radius)",
+                backgroundColor: "var(--primary-bg)",
               },
-              "&:hover fieldset": {
-                borderColor: "var(--accent-color)",
+              "& .MuiFormLabel-root": {
+                color: "var(--primary-text)",
               },
-              "&.Mui-focused fieldset": {
-                borderColor: "var(--accent-color) !important",
-                color: "var(--accent-color)",
-                borderWidth: "2px",
-              },
-            },
-            "& .MuiButtonBase-root": {
-              color: "var(--primary-text)",
-            },
-          }}
-          PopperProps={{
-            modifiers: [
-              {
-                name: "offset",
-                options: {
-                  offset: [0, 8],
+              "& .MuiOutlinedInput-root": {
+                color: "var(--primary-text)",
+                "& fieldset": {
+                  color: "var(--primary-text)",
+                  borderColor: "var(--border)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "var(--accent-color)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "var(--accent-color) !important",
+                  color: "var(--accent-color)",
+                  borderWidth: "2px",
                 },
               },
-            ],
-            sx: {
-              "& .MuiPaper-root": {
-                backgroundColor: "var(--primary-bg)",
+              "& .MuiButtonBase-root": {
                 color: "var(--primary-text)",
               },
-            },
-          }}
-        />
-        <MobileTimePicker
-          label="Event Time"
-          value={eventTime}
-          onChange={(newValue) => {
-            const selectedDate = eventDate;
-            const today = new Date();
-
-            // Only validate time if the selected date is today
-            if (
-              selectedDate &&
-              selectedDate.toDateString() === today.toDateString()
-            ) {
-              if (newValue && newValue > today) {
-                setEventTime(newValue);
-              } else {
-                alert("Please select a time in the future.");
-              }
-            } else {
-              setEventTime(newValue); // No restrictions for future dates
-            }
-          }}
-          sx={{
-            marginRight: 2,
-            "& .MuiInputBase-root": {
-              color: "var(--primary-text)",
-              borderRadius: "var(--border-radius)",
-              backgroundColor: "var(--primary-bg)",
-            },
-            "& .MuiFormLabel-root": {
-              color: "var(--primary-text)",
-            },
-            "& .MuiOutlinedInput-root": {
-              color: "var(--primary-text)",
-              "& fieldset": {
-                color: "var(--primary-text)",
-                borderColor: "var(--border)",
+            }}
+            PopperProps={{
+              modifiers: [
+                {
+                  name: "offset",
+                  options: {
+                    offset: [0, 8],
+                  },
+                },
+              ],
+              sx: {
+                "& .MuiPaper-root": {
+                  backgroundColor: "var(--primary-bg)",
+                  color: "var(--primary-text)",
+                },
               },
-              "&:hover fieldset": {
-                borderColor: "var(--accent-color)",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "var(--accent-color) !important",
-                color: "var(--accent-color)",
-                borderWidth: "2px",
-              },
-            },
-            "& .MuiButtonBase-root": {
-              color: "var(--primary-text)",
-            },
-          }}
-        />
-      </LocalizationProvider>
-
-      {/* Invite Friends Section */}
-      <Box mt={4} sx={{ marginBottom: 4 }}>
-        <Box display="flex" alignItems="center" mt={2}>
-          <Box display="flex" alignItems="center">
-            <Typography variant="h5" mr={2}>
-              Invite Friends
-            </Typography>
-          </Box>
-          <OutlineButton
-            text="Add Email ID"
-            onClick={handleInviteClick}
-            width="25%"
-            margin="0.5rem"
+            }}
           />
+          <MobileTimePicker
+            label="Event Time"
+            value={eventTime}
+            onChange={(newValue) => {
+              const selectedDate = eventDate;
+              const today = new Date();
+
+              // Only validate time if the selected date is today
+              if (
+                selectedDate &&
+                selectedDate.toDateString() === today.toDateString()
+              ) {
+                if (newValue && newValue > today) {
+                  setEventTime(newValue);
+                } else {
+                  alert("Please select a time in the future.");
+                }
+              } else {
+                setEventTime(newValue); // No restrictions for future dates
+              }
+            }}
+            sx={{
+              marginRight: 2,
+              "& .MuiInputBase-root": {
+                color: "var(--primary-text)",
+                borderRadius: "var(--border-radius)",
+                backgroundColor: "var(--primary-bg)",
+              },
+              "& .MuiFormLabel-root": {
+                color: "var(--primary-text)",
+              },
+              "& .MuiOutlinedInput-root": {
+                color: "var(--primary-text)",
+                "& fieldset": {
+                  color: "var(--primary-text)",
+                  borderColor: "var(--border)",
+                },
+                "&:hover fieldset": {
+                  borderColor: "var(--accent-color)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "var(--accent-color) !important",
+                  color: "var(--accent-color)",
+                  borderWidth: "2px",
+                },
+              },
+              "& .MuiButtonBase-root": {
+                color: "var(--primary-text)",
+              },
+            }}
+          />
+        </LocalizationProvider>
+
+        {/* Invite Friends Section */}
+        <Box mt={4} sx={{ marginBottom: 4 }}>
+          <Box display="flex" alignItems="center" mt={2}>
+            <Box display="flex" alignItems="center">
+              <Typography variant="h5" mr={2}>
+                Invite Friends
+              </Typography>
+            </Box>
+            <OutlineButton
+              text="Add Email ID"
+              onClick={handleInviteClick}
+              width="25%"
+              margin="0.5rem"
+            />
+            <OutlineButton
+              text="Choose Friends"
+              onClick={handleOpenModal}
+              width="25%"
+            />
+          </Box>
+
+          {/* Display List of Invitees */}
+          {invitees.length > 0 && (
+            <Box
+              sx={{
+                display: "flex", // Arrange items horizontally
+                flexWrap: "wrap", // Wrap items if they exceed container width
+                gap: 2, // Add spacing between items
+                overflowX: "auto", // Enable horizontal scrolling if needed
+              }}
+            >
+              {fetchedInvitees.length > 0 && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 2,
+                    overflowX: "auto",
+                  }}
+                >
+                  {fetchedInvitees.map((user) => (
+                    <UserCard
+                      key={user.UID}
+                      username={user.username}
+                      email={user.email}
+                      onRemove={() => handleRemoveInvitee(user.UID)}
+                      showDeleteIcon={true} // Show delete icon only if it's not an edit mode
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
+          )}
+
+          {showInviteInput && (
+            <Box display="flex" alignItems="center" mt={2}>
+              <InputField
+                label="Enter Email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+              />
+              <IconButton
+                sx={{ color: "var(--accent-color)", mb: 3 }}
+                onClick={handleAddInvitee}
+              >
+                <AddIcon />
+              </IconButton>
+            </Box>
+          )}
+
+          {userNotFound && (
+            <Typography color="error" variant="body2">
+              {invitees.includes(inviteEmail)
+                ? "User is already added."
+                : "User does not exist."}
+            </Typography>
+          )}
+        </Box>
+
+        {/* Movie Selection */}
+        <Box sx={{ display: "flex", mb: 2 }}>
+          <Typography variant="h5" sx={{ marginBottom: 2, mr: 4 }}>
+            Add Movies to Vote On
+          </Typography>
           <OutlineButton
-            text="Choose Friends"
-            onClick={handleOpenModal}
+            text="Choose Movies"
+            onClick={handleOpenDashboardModal}
             width="25%"
+            padding="0"
           />
         </Box>
 
-        {/* Display List of Invitees */}
-        {invitees.length > 0 && (
+        {selectedMovies.length > 0 && (
           <Box
             sx={{
-              display: "flex", // Arrange items horizontally
-              flexWrap: "wrap", // Wrap items if they exceed container width
-              gap: 2, // Add spacing between items
+              display: "flex", // Display items in a row
+              flexWrap: "wrap", // Wrap items to the next row if they exceed container width
+              gap: 2, // Space between items
               overflowX: "auto", // Enable horizontal scrolling if needed
             }}
           >
-            {fetchedInvitees.length > 0 && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 2,
-                  overflowX: "auto",
-                }}
-              >
-                {fetchedInvitees.map((user) => (
-                  <UserCard
-                    key={user.UID}
-                    username={user.username}
-                    email={user.email}
-                    onRemove={() => handleRemoveInvitee(user.UID)}
-                    showDeleteIcon={true} // Show delete icon only if it's not an edit mode
-                  />
-                ))}
+            {selectedMovies.map((movie) => (
+              <Box key={movie.tmdb_id} sx={{ width: "10rem" }}>
+                <MovieCardSelected
+                  id={movie.tmdb_id}
+                  title={movie.title}
+                  image={movie.poster}
+                  onRemove={handleRemoveMovie} // Ensure this prop is passed correctly
+                />
               </Box>
-            )}
+            ))}
           </Box>
         )}
 
-        {showInviteInput && (
-          <Box display="flex" alignItems="center" mt={2}>
-            <InputField
-              label="Enter Email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-            />
-            <IconButton
-              sx={{ color: "var(--accent-color)", mb: 3 }}
-              onClick={handleAddInvitee}
-            >
-              <AddIcon />
-            </IconButton>
-          </Box>
-        )}
-
-        {userNotFound && (
-          <Typography color="error" variant="body2">
-            {invitees.includes(inviteEmail)
-              ? "User is already added."
-              : "User does not exist."}
-          </Typography>
-        )}
+        {/* Create Event Button */}
+        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
+          <AccentButton
+            text={initialEvent ? "Edit Event" : "Create Event"}
+            onClick={initialEvent ? handleSave : handleCreateEvent}
+            padding="12px 24px"
+            sx={{
+              backgroundColor: "#C08081",
+              ":hover": { backgroundColor: "#C08081" },
+            }} // Customize the background color
+          />
+        </Box>
       </Box>
 
       <Modal open={modalOpen} onClose={handleCloseModal}>
@@ -526,6 +583,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
           >
             Select your friends
           </Typography>
+          <SearchField onSearchChange={handleUserSearchChange} />
           <List sx={{ overflowX: "auto" }}>
             {allUsers.length === 0 ? (
               <Typography>No friends found</Typography>
@@ -581,41 +639,6 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         </Box>
       </Modal>
 
-      {/* Movie Selection */}
-      <Box sx={{ display: "flex", mb: 2 }}>
-        <Typography variant="h5" sx={{ marginBottom: 2, mr: 4 }}>
-          Add Movies to Vote On
-        </Typography>
-        <OutlineButton
-          text="Choose Movies"
-          onClick={handleOpenDashboardModal}
-          width="25%"
-          padding="0"
-        />
-      </Box>
-
-      {selectedMovies.length > 0 && (
-        <Box
-          sx={{
-            display: "flex", // Display items in a row
-            flexWrap: "wrap", // Wrap items to the next row if they exceed container width
-            gap: 2, // Space between items
-            overflowX: "auto", // Enable horizontal scrolling if needed
-          }}
-        >
-          {selectedMovies.map((movie) => (
-            <Box key={movie.tmdb_id} sx={{ width: "10rem" }}>
-              <MovieCardSelected
-                id={movie.tmdb_id}
-                title={movie.title}
-                image={movie.poster}
-                onRemove={handleRemoveMovie} // Ensure this prop is passed correctly
-              />
-            </Box>
-          ))}
-        </Box>
-      )}
-
       <Modal
         open={dashboardModalOpen}
         onClose={handleCloseDashboardModal}
@@ -657,18 +680,6 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         </Box>
       </Modal>
 
-      {/* Create Event Button */}
-      <Box sx={{ display: "flex", justifyContent: "center", marginTop: 4 }}>
-        <AccentButton
-          text={initialEvent ? "Edit Event" : "Create Event"}
-          onClick={initialEvent ? handleSave : handleCreateEvent}
-          padding="12px 24px"
-          sx={{
-            backgroundColor: "#C08081",
-            ":hover": { backgroundColor: "#C08081" },
-          }} // Customize the background color
-        />
-      </Box>
       {/* Snackbar for Event Creation Feedback */}
       <Snackbar
         open={snackbarOpen}
