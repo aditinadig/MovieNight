@@ -13,6 +13,7 @@ import VoteMovies from "../vote/VoteMovies";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import Cookies from "js-cookie";
 import EventForm from "./EventForm";
+import { set } from "date-fns";
 
 const AllEvents = () => {
   useEffect(() => {
@@ -30,6 +31,7 @@ const AllEvents = () => {
   const [selectedChip, setSelectedChip] = useState("All Events");
   const [editingEvent, setEditingEvent] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [loadingEvents, setLoadingEvents] = useState(true);
 
   const handleEdit = (event) => {
     setEditingEvent(event);
@@ -96,6 +98,7 @@ const AllEvents = () => {
 
   useEffect(() => {
     const fetchEvents = async () => {
+      setLoadingEvents(true);
       if (!userId) return;
       try {
         const response = await fetchEventsByUser(userId);
@@ -107,11 +110,13 @@ const AllEvents = () => {
       } catch (error) {
         console.error("Error fetching events:", error);
       }
+      setLoadingEvents(false);
     };
     fetchEvents();
   }, [userId]);
 
   const fetchEvents = async () => {
+    setLoadingEvents(true);
     if (!userId) return;
     try {
       const response = await fetchEventsByUser(userId);
@@ -122,6 +127,7 @@ const AllEvents = () => {
     } catch (error) {
       console.error("Error fetching events:", error);
     }
+    setLoadingEvents(false);
   };
 
   const fetchCreatorEvents = async () => {
@@ -242,7 +248,11 @@ const AllEvents = () => {
       </Box>
 
       <Grid container spacing={4} mt={2}>
-        {events.length > 0 ? (
+        {loadingEvents ? ( // Display "Loading events..." while fetching data
+          <Typography variant="body1" sx={{ mt: 2 }}>
+            Loading events...
+          </Typography>
+        ) : events.length > 0 ? ( // Display events if available
           events.map((event) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={event.id}>
               <EventCard
@@ -253,6 +263,7 @@ const AllEvents = () => {
             </Grid>
           ))
         ) : (
+          // Show this only if no events are found after loading
           <Typography variant="body1" sx={{ mt: 2 }}>
             No events found.
           </Typography>

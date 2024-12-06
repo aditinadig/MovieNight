@@ -9,6 +9,8 @@ import {
   List,
   ListItem,
   ListItemText,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import AccentButton from "../form/AccentButton";
@@ -21,7 +23,7 @@ import {
 import CreatePlaylist from "./CreatePlaylist.jsx";
 import PlaylistCard from "../playlists/PlaylistCard"; // Ensure correct path to PlaylistCard
 import Dashboard from "../dashboard/Dashboard";
-import { add } from "date-fns";
+import { add, set } from "date-fns";
 import { id } from "date-fns/locale";
 
 const Playlist = () => {
@@ -41,6 +43,20 @@ const Playlist = () => {
   const [movies, setMovies] = useState([]); // New state to store movies for the playlist
   const [openAddMoviesModal, setOpenAddMoviesModal] = useState(false); // New state for add movies modal
   const [selectedMovies, setSelectedMovies] = useState([]);
+  const [loadingPlaylists, setLoadingPlaylists] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls Snackbar visibility
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Message to display
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info"); // Severity: 'success', 'error', 'info', 'warning'
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+  
+  const showSnackbar = (message, severity = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
 
   const handleEdit = async (playlist) => {
     setEditingPlaylist(playlist);
@@ -121,9 +137,11 @@ const Playlist = () => {
   const handleModalClose = () => {
     setOpenModal(false);
     setMovies([]); // Clear movies when modal closes
+    fetchPlaylists(); // Fetch playlists after closing modal
   };
 
   const fetchPlaylists = async () => {
+    setLoadingPlaylists(true); // Set loading state to true
     if (!userId) return;
     try {
       const response = await fetchPlaylistsByUser(userId); // Use fetchPlaylistsByUser here
@@ -131,6 +149,7 @@ const Playlist = () => {
     } catch (error) {
       console.error("Error fetching playlists:", error);
     }
+    setLoadingPlaylists(false); // Set loading state to false
   };
 
   const handleAddMovies = () => {
@@ -206,7 +225,11 @@ const Playlist = () => {
 
       <Box sx={{ mx: 12 }}>
         <Grid container spacing={8} mt={0}>
-          {playlists.length > 0 ? (
+          {loadingPlaylists ? ( // Check if playlists are still loading
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              Loading playlists...
+            </Typography>
+          ) : playlists.length > 0 ? ( // Show playlists if available
             playlists.map((playlist) => (
               <Grid item xs={12} sm={12} md={12} lg={12} key={playlist.id}>
                 <PlaylistCard
@@ -217,6 +240,7 @@ const Playlist = () => {
               </Grid>
             ))
           ) : (
+            // Show this only if playlists are empty after loading
             <Typography variant="body1" sx={{ mt: 2 }}>
               No playlists found.
             </Typography>

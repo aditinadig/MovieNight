@@ -29,11 +29,14 @@ import {
   Select,
   MenuItem,
   Link,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import SearchField from "../form/SearchField.jsx";
 import AccentButton from "../form/AccentButton.jsx";
 import OutlineButton from "../form/outlineButton.jsx";
 import CreatePlaylist from "../playlists/CreatePlaylist.jsx";
+import { set } from "date-fns";
 
 export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   // Track user authentication state
@@ -76,6 +79,20 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const [currentMovie, setCurrentMovie] = useState(null); // Track the current movie for playlist addition
   const [loading, setLoading] = useState(false); // For loading state when adding a movie
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Controls Snackbar visibility
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Message to display in Snackbar
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info"); // Severity: 'success', 'error', 'info', 'warning'
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false); // Closes the Snackbar
+  };
+
+  const showSnackbar = (message, severity = "info") => {
+    setSnackbarMessage(message); // Set the message
+    setSnackbarSeverity(severity); // Set the severity
+    setSnackbarOpen(true); // Open the Snackbar
+  };
+
   const handleLearnMoreClick = (movie) => {
     setSelectedMovie(movie); // Set the selected movie
     setOpenMovieModal(true); // Open the modal
@@ -110,7 +127,10 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
     setOpenPlaylistModal(true); // Open the modal
   };
 
-  const handlePlaylistModalClose = () => setOpenPlaylistModal(false); // Close modal
+  const handlePlaylistModalClose = () => {
+    setSelectedPlaylist(null); // Reset selected playlist
+    setOpenPlaylistModal(false); 
+  }// Close modal
 
   // Fetch playlists on user state change
   useEffect(() => {
@@ -126,7 +146,7 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   // Handle adding a movie to a playlist
   const addMovieToPlaylist = async () => {
     if (!selectedPlaylist) {
-      alert("Please select or create a playlist.");
+      showSnackbar("Please select or create a playlist.", "warning");
       return;
     }
 
@@ -153,12 +173,14 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
 
         setPlaylists(updatedPlaylists); // Set the updated playlists state
 
-        alert(
-          `Movie ${currentMovie.title} added to playlist ${playlistToUpdate.name}`
+        showSnackbar(
+          `Movie ${currentMovie.title} added to playlist ${playlistToUpdate.name}`,
+          "success"
         );
       }
 
       setLoading(false); // Hide loading indicator
+      setSelectedPlaylist(null); // Reset selected playlist
       handlePlaylistModalClose(); // Close the modal after adding the movie
     }
   };
@@ -866,6 +888,17 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
           />
         </Box>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000} // Snackbar disappears after 3 seconds
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

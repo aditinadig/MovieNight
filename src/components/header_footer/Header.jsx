@@ -48,7 +48,7 @@ export default function Header({ activePage }) {
           <>
             {activePage === "dashboard" ? (
               <>
-                <LinkButton text="Instructions" navigateTo="/instructions" />
+                <LinkButton text="📋 Instructions 📋" navigateTo="/instructions" />
                 <LinkButton text="Dashboard" navigateTo="/dashboard" />
                 <LinkButton text="Events" navigateTo="/all-events" />
                 <LinkButton text="Playlists" navigateTo="/all-playlists" />
@@ -57,7 +57,7 @@ export default function Header({ activePage }) {
             ) : (
               <>
                 {/* If authenticated and not on the dashboard, show Dashboard and Logout */}
-                <LinkButton text="Instructions" navigateTo="/instructions" />
+                <LinkButton text="📋 Instructions 📋" navigateTo="/instructions" />
                 <AccentButton text="Dashboard" navigateTo="/dashboard" />
                 <OutlineButton text="Logout" onClick={handleLogout} />
               </>
@@ -68,19 +68,19 @@ export default function Header({ activePage }) {
             {/* If not authenticated */}
             {activePage === "login" && (
               <>
-                <LinkButton text="Instructions" navigateTo="/instructions" />
+                <LinkButton text="📋 Instructions 📋" navigateTo="/instructions" />
                 <OutlineButton text="Signup" navigateTo="/signup" />
               </>
             )}
             {activePage === "signup" && (
               <>
-                <LinkButton text="Instructions" navigateTo="/instructions" />
+                <LinkButton text="📋 Instructions 📋" navigateTo="/instructions" />
                 <OutlineButton text="Login" navigateTo="/login" />
               </>
             )}
             {activePage === "home" && (
               <>
-                <LinkButton text="Instructions" navigateTo="/instructions" />
+                <LinkButton text="📋 Instructions 📋" navigateTo="/instructions" />
                 <AccentButton text="Login" navigateTo="/login" />
                 <OutlineButton text="Signup" navigateTo="/signup" />
               </>
