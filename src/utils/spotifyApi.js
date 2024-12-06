@@ -3,8 +3,8 @@ const SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search";
 
 const CLIENT_ID = "5a7e7dd5bf8741a3b2daf1ae4a47ed78"; // Replace with your Spotify Client ID
 const CLIENT_SECRET = "60a1ea73712042d6a5d4d20f5d619cce"; // Replace with your Spotify Client Secret
-const REDIRECT_URI = "http://localhost:4321/dashboard"; // Update with your app's redirect URI
-const SPOTIFY_AUTH_URL = "http://localhost:4321/spotify-search";
+const REDIRECT_URI = "https://movienight-b60a3.web.app/dashboard"; // Update with your app's redirect URI
+const SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize";
 
 let accessToken = null;
 let tokenExpirationTime = 0;
