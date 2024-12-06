@@ -1,6 +1,13 @@
 import React from "react";
-import { Button, Card, CardMedia, CardContent, Typography, Box } from "@mui/material";
-
+import {
+  Button,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Box,
+  Link,
+} from "@mui/material";
 
 export default function MovieCard({
   id,
@@ -13,8 +20,6 @@ export default function MovieCard({
   selectedMovies = [],
   handlePlaylistModalOpen,
 }) {
-  
-
   const isSelected = selectedMovies.some((movie) => movie.tmdb_id === id);
 
   return (
@@ -38,15 +43,57 @@ export default function MovieCard({
           transform: mode === "disabled" ? "none" : "scale(0.98)", // Shrink the card slightly when clicked if not disabled
         },
         border: isSelected ? "2px solid var(--accent-color)" : "none", // Add a border if the movie is selected
+        position: "relative", // For positioning the "+" button
       }}
     >
+      {/* Add to Playlist Button */}
+      {mode !== "choose-movies" ? (
+        <>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "8px",
+              right: "8px",
+              zIndex: 2,
+              backgroundColor: "var(--accent-color)", // Button background
+              borderRadius: "50%", // Circular button
+              width: "35px",
+              height: "35px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              boxShadow: "0 0 30px rgba(0, 0, 0)",
+              fontSize: "2rem",
+              fontWeight: "800",
+              cursor: "pointer",
+              "&:hover": {
+                boxShadow: "0 0 50px rgba(0, 0, 0)",
+              },
+            }}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering card click
+              if (handlePlaylistModalOpen) handlePlaylistModalOpen(id); // Call the add-to-playlist function
+            }}
+          >
+            +
+          </Box>
+        </>
+      ) : (
+        ""
+      )}
+
       {/* Movie Image */}
       <CardMedia
         component="img"
         image={image}
         alt={title}
         sx={{
-          height: mode === "choose-movies" ? "1.5rem" : mode === "surprise-movies" ? "3rem": "20rem", // Set a fixed height for the image
+          height:
+            mode === "choose-movies"
+              ? "1.5rem"
+              : mode === "surprise-movies"
+              ? "3rem"
+              : "20rem", // Set a fixed height for the image
           objectFit: "cover", // Ensure the image covers the container without distortion
         }}
       />
@@ -57,8 +104,7 @@ export default function MovieCard({
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end", // Align the content at the bottom
-          //flexGrow: 1, // Allow the content to take up the available space
-          paddingBottom: "4rem", // This creates space for the buttons at the bottom    
+          paddingBottom: "4rem", // This creates space for the buttons at the bottom
         }}
       >
         <Typography
@@ -77,27 +123,24 @@ export default function MovieCard({
         >
           {genre}
         </Typography>
-       {/* Buttons - Learn More and Add to Playlist */}
-       <Box sx={{ marginTop: 4, display: "flex", justifyContent: "center", gap: 1 }}>
-          <Button
-            variant="outlined"
-            color="primary"
+        {/* Buttons - Learn More */}
+        <Box sx={{ marginTop: "auto" }}>
+          <Link
             onClick={(e) => {
               e.stopPropagation(); // Prevent card click event
               if (onLearnMore) onLearnMore(id); // Call the onLearnMore function
             }}
             sx={{
-              flex: 1,
-              textTransform: "none",
-              borderColor:"lightgreen",
-              color:"lightgreen",
-              "&:hover": {borderColor: "darkgreen", // Darken the border on hover
-                backgroundColor: "rgba(0, 128, 0, 0.1)",},
+              marginTop: "auto",
+              cursor: "pointer",
+              fontSize: "0.8rem",
+              textDecoration: "underline",
+              textDecorationColor: "var(--secondary-text)",
+              color: "var(--secondary-text)",
             }}
           >
             Learn More
-          </Button>
-          
+          </Link>
         </Box>
       </CardContent>
     </Card>
