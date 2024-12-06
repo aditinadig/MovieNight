@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { auth } from "../../../firebaseConfig";
-import { fetchAllMovies, fetchGenres, fetchMovieDetails } from "../../utils/tmdbApi.js";
+import {
+  fetchAllMovies,
+  fetchGenres,
+  fetchMovieDetails,
+} from "../../utils/tmdbApi.js";
 import {
   fetchAllPlaylists,
   createPlaylist,
@@ -8,23 +12,20 @@ import {
 } from "../../services/playlistsService"; // Import your service
 import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
-import { IconButton } from "@mui/material";
 import {
   Box,
   Typography,
   Grid,
   Pagination,
-  TextField,
-  Slider,
-  MenuItem,
   Button,
   Modal,
+  Card,
+  CardMedia,
+  CardContent,
+  Fade,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add"; // <-- Add Icon for movie to playlist
 import SearchField from "../form/SearchField.jsx";
-import Cookies from "js-cookie";
 import AccentButton from "../form/AccentButton.jsx";
-import EventForm from "../event/EventForm.jsx";
 import OutlineButton from "../form/outlineButton.jsx";
 
 export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
@@ -560,57 +561,155 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
           </Grid>
         </Box>
       </Modal>
+
       {/* Movie Details Modal */}
       <Modal
         open={openMovieModal}
         onClose={handleCloseMovieModal}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+        aria-labelledby="movie-modal-title"
+        aria-describedby="movie-modal-description"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backdropFilter: "blur(8px)", // Adds a background blur for a modern look
+        }}
       >
-        <Box
-          sx={{
-            backgroundColor: "lightgreen",
-            padding: 4,
-            borderRadius: 2,
-            width: "60%",
-            maxHeight: "80vh",
-            overflowY: "auto",
-          }}
-        >
-          {selectedMovie && (
-            <>
-              <Typography variant="h5" gutterBottom sx={{ color: "white" }}>
-                {selectedMovie.title}
-              </Typography>
-              <img
-                src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
-                alt={selectedMovie.title}
-                style={{
-                  marginTop: "10px",
-                  marginBottom: "10px",
-                  width: "15%",
-                }}
-              />
+        <Fade in={openMovieModal}>
+          <Card
+            sx={{
+              background: "linear-gradient(145deg, #121212, #1e1e1e)", // Gradient background
+              padding: 4,
+              borderRadius: 4,
+              width: { xs: "90%", md: "60%" },
+              maxHeight: "80vh",
+              overflowY: "auto",
+              boxShadow: "0px 10px 20px rgba(0,0,0,0.5)", // Subtle shadow for depth
+              color: "white",
+            }}
+          >
+            {selectedMovie && (
+              <Grid container spacing={4}>
+                {/* Image Section */}
+                <Grid
+                  item
+                  xs={12}
+                  md={4}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    image={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`}
+                    alt={selectedMovie.title || "Movie poster"}
+                    sx={{
+                      maxWidth: "100%",
+                      maxHeight: "300px",
+                      objectFit: "cover",
+                      borderRadius: 2,
+                      boxShadow: "0px 4px 8px rgba(0,0,0,0.3)", // Shadow for the image
+                    }}
+                  />
+                </Grid>
 
-              <Typography variant="body1" color="white">
-                {selectedMovie.overview}
-              </Typography>
-              <Typography variant="h6" sx={{ mt: 2, color: "white" }}>
-                Genres: {mapGenres(selectedMovie.genre_ids)}
-              </Typography>
-              <Typography variant="h6" sx={{ color: "white" }}>
-                Release Date: {selectedMovie.release_date}
-              </Typography>
-              <Button
-                onClick={handleCloseMovieModal}
-                sx={{ mt: 2 }}
-                variant="contained"
-                color="primary"
-              >
-                Close
-              </Button>
-            </>
-          )}
-        </Box>
+                {/* Text Section */}
+                <Grid item xs={12} md={8}>
+                  <CardContent>
+                    <Typography
+                      id="movie-modal-title"
+                      variant="h4"
+                      gutterBottom
+                      sx={{
+                        color: "white",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                        textTransform: "uppercase", // Added emphasis
+                        letterSpacing: 1,
+                      }}
+                    >
+                      {selectedMovie.title}
+                    </Typography>
+                    <Typography
+                      id="movie-modal-description"
+                      variant="body1"
+                      color="white"
+                      sx={{
+                        textAlign: "justify",
+                        mb: 2,
+                        lineHeight: 1.8, // Increased spacing for readability
+                        opacity: 0.85,
+                      }}
+                    >
+                      {selectedMovie.overview}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: "white",
+                        mb: 1,
+                        fontWeight: "bold",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      🎬 <strong style={{ marginLeft: "8px" }}>Genres:</strong>{" "}
+                      <span style={{ marginLeft: "8px", fontWeight: 400 }}>
+                        {mapGenres(selectedMovie.genre_ids)}
+                      </span>
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: "white",
+                        mb: 2,
+                        fontWeight: "bold",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      📅{" "}
+                      <strong style={{ marginLeft: "8px" }}>
+                        Release Date:
+                      </strong>{" "}
+                      <span style={{ marginLeft: "8px", fontWeight: 400 }}>
+                        {selectedMovie.release_date}
+                      </span>
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: { xs: "center", md: "start" },
+                        mt: 3,
+                      }}
+                    >
+                      <Button
+                        onClick={handleCloseMovieModal}
+                        variant="contained"
+                        color="secondary"
+                        sx={{
+                          px: 4,
+                          py: 1.5,
+                          backgroundColor: "#ff4081", // Custom pink color
+                          color: "white",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          "&:hover": {
+                            backgroundColor: "#ff79a1", // Lighter pink on hover
+                          },
+                        }}
+                      >
+                        Close
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Grid>
+              </Grid>
+            )}
+          </Card>
+        </Fade>
       </Modal>
     </Box>
   );
