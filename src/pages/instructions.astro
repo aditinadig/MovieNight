@@ -1,0 +1,19 @@
+---
+import Header from "../components/header_footer/Header";
+import Footer from "../components/header_footer/Footer";
+import Instructions from "../components/instructions/Instructions";
+import "../styles/global.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - Movie Night</title>
+  </head>
+  <body>
+    <Header activePage="dashboard" client:only="react" />
+    <Instructions client:only="react" />
+    <Footer client:only="react" />
+  </body>
+</html>

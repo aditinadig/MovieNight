@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import AccentButton from "../form/AccentButton";
+import OutlineButton from "../form/outlineButton";
 import { fetchUserByUID } from "../../services/usersService";
 import { db, auth } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -162,11 +163,11 @@ const EventCard = ({ event, handleVote, handleEdit }) => {
           <Typography variant="h6" gutterBottom>
             Movies
           </Typography>
-          <AccentButton
+          <OutlineButton
             text="Vote"
             width="25%"
             marginBottom="2rem"
-            marginTop="0.4rem"
+            marginTop="0.2rem"
             padding="3px 12px"
             onClick={() => handleVote(event)}
           />
@@ -220,7 +221,7 @@ const EventCard = ({ event, handleVote, handleEdit }) => {
           ))}
         </Grid>
       </Box>
-      <Box sx={{ p: 2, textAlign: "center" }}>
+      <Box sx={{ p: 2, mt: "auto", textAlign: "center" }}>
         <AccentButton
           text={isBingoGameActive ? "Join Bingo Game" : "Start Bingo Game"}
           width="100%"

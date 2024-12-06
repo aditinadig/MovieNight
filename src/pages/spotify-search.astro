@@ -1,0 +1,29 @@
+---
+import Header from '../components/header_footer/Header.jsx';
+import Footer from '../components/header_footer/Footer.jsx';
+import SpotifySearch from '../components/spotify/SpotifySearch.jsx'; // Ensure the correct path and file name
+import "../styles/global.css";
+import "../styles/animations.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <!-- Container that ensures the footer appears at the bottom -->
+    <div style="min-height: 100vh; display: flex; flex-direction: column;">
+      <!-- Header stays at the top -->
+      <Header client:only="react" activePage="dashboard" />
+
+
+      <SpotifySearch albumName="Interstellar" client:only="react" />
+      
+      
+      <!-- Footer at the bottom -->
+      <Footer client:only="react" />
+    </div>
+  </body>
+</html>

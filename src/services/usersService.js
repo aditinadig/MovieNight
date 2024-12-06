@@ -24,3 +24,20 @@ export const createUser = async (userData) => {
   const docRef = await addDoc(usersCollectionRef, userData);
   return { id: docRef.id, ...userData };
 };
+
+
+export const retrieveAllUsers = async (invitees) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const users = querySnapshot.docs
+      .map((doc) => ({
+        username: doc.data().username,
+        email: doc.data().email,
+        UID: doc.data().UID,
+      }))
+      .filter((user) => !invitees.includes(user.UID));
+    return users;
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+  }
+};
