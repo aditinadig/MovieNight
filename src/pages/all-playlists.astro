@@ -1,0 +1,30 @@
+---
+import Header from '../components/header_footer/Header.jsx';
+import Footer from '../components/header_footer/Footer.jsx';
+import AllPlaylistsComponents from '../components/playlists/Playlist.jsx';
+import "../styles/global.css";
+import "../styles/animations.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Playlists</title>
+  </head>
+  <body>
+    <!-- Container that ensures the footer appears at the bottom -->
+    <div style="min-height: 100vh; display: flex; flex-direction: column;">
+      <!-- Header stays at the top -->
+      <Header client:only="react" activePage="dashboard" />
+      
+      <!-- Main content takes the remaining space, pushing the footer down -->
+      <main style="flex: 1;">
+        <AllPlaylistsComponents client:only="react" />
+      </main>
+      
+      <!-- Footer at the bottom -->
+      <Footer client:only="react" />
+    </div>
+  </body>
+</html>

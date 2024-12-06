@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, CardMedia, CardContent, Typography, Box } from "@mui/material";
+import { Button, Card, CardMedia, CardContent, Typography, Box } from "@mui/material";
+
 
 export default function MovieCard({
   id,
@@ -8,7 +9,9 @@ export default function MovieCard({
   image,
   mode,
   onSelect,
+  onLearnMore, // Add this prop to handle button click
   selectedMovies = [],
+  handlePlaylistModalOpen,
 }) {
   
 
@@ -54,6 +57,8 @@ export default function MovieCard({
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end", // Align the content at the bottom
+          //flexGrow: 1, // Allow the content to take up the available space
+          paddingBottom: "4rem", // This creates space for the buttons at the bottom    
         }}
       >
         <Typography
@@ -72,6 +77,28 @@ export default function MovieCard({
         >
           {genre}
         </Typography>
+       {/* Buttons - Learn More and Add to Playlist */}
+       <Box sx={{ marginTop: 4, display: "flex", justifyContent: "center", gap: 1 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent card click event
+              if (onLearnMore) onLearnMore(id); // Call the onLearnMore function
+            }}
+            sx={{
+              flex: 1,
+              textTransform: "none",
+              borderColor:"lightgreen",
+              color:"lightgreen",
+              "&:hover": {borderColor: "darkgreen", // Darken the border on hover
+                backgroundColor: "rgba(0, 128, 0, 0.1)",},
+            }}
+          >
+            Learn More
+          </Button>
+          
+        </Box>
       </CardContent>
     </Card>
   );

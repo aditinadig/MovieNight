@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { auth } from "../../../firebaseConfig";
 import { fetchAllMovies, fetchGenres } from "../../utils/tmdbApi.js";
+import { fetchAllPlaylists, createPlaylist, updatePlaylist } from "../../services/playlistsService"; // Import your service
 import FiltersDrawer from "./FiltersDrawer.jsx";
 import MovieCard from "../movies/MovieCard.jsx";
+import { IconButton } from '@mui/material';
 import {
   Box,
   Typography,
@@ -14,6 +16,7 @@ import {
   Button,
   Modal,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add"; // <-- Add Icon for movie to playlist
 import SearchField from "../form/SearchField.jsx";
 import Cookies from "js-cookie";
 import AccentButton from "../form/AccentButton.jsx";
@@ -21,14 +24,22 @@ import EventForm from "../event/EventForm.jsx";
 import OutlineButton from "../form/outlineButton.jsx";
 
 export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
+  // Track user authentication state
   useEffect(() => {
-    const authToken = Cookies.get("authToken");
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user); // Set user if logged in
+      } else {
+        setUser(null); // Set user to null if not logged in
+        window.location.href = "/login"; // Redirect to login if not authenticated
+      }
+    });
 
-    if (!authToken) {
-      window.location.href = "/login";
-    }
+    return () => unsubscribe(); // Cleanup listener on component unmount
   }, []);
 
+
+  const [user, setUser] = useState(null); // State for tracking authenticated user
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [page, setPage] = useState(1);
@@ -42,6 +53,116 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
   const [mood, setMood] = useState(""); // Add mood state
   const [surpriseMovies, setSurpriseMovies] = useState([]); // State for surprise movies
   const [isSurpriseModalVisible, setIsSurpriseModalVisible] = useState(false); // Modal visibility state
+  const [selectedMovie, setSelectedMovie] = useState(null); // Track the selected movie for modal
+  const [openMovieModal, setOpenMovieModal] = useState(false); // State to control modal visibility
+
+
+  // Add state for playlists and modal visibility
+  const [playlists, setPlaylists] = useState([]); // List of user playlists
+  const [selectedPlaylist, setSelectedPlaylist] = useState(null); // Selected playlist for movie addition
+  const [openPlaylistModal, setOpenPlaylistModal] = useState(false); // Modal open state
+  const [currentMovie, setCurrentMovie] = useState(null); // Track the current movie for playlist addition
+  const [loading, setLoading] = useState(false); // For loading state when adding a movie
+
+
+  const handleLearnMoreClick = (movie) => {
+    setSelectedMovie(movie); // Set the selected movie
+    setOpenMovieModal(true); // Open the modal
+  };
+
+  const handleCloseMovieModal = () => {
+    setOpenMovieModal(false); // Close the modal
+    setSelectedMovie(null); // Reset the selected movie
+  };
+
+
+  // Handle opening/closing of the modal
+  const handlePlaylistModalOpen = (movie) => {
+    setCurrentMovie(movie); // Set the current movie when the modal is opened
+    setOpenPlaylistModal(true); // Open the modal
+  };
+    const handlePlaylistModalClose = () => setOpenPlaylistModal(false); // Close modal
+
+  // // Fetch playlists from Firestore
+  // useEffect(() => {
+  //   const fetchPlaylists = async () => {
+  //     const fetchedPlaylists = await fetchAllPlaylists();
+  //     setPlaylists(fetchedPlaylists);
+  //   };
+  //   fetchPlaylists();
+  // }, []);
+
+//   // Fetch playlists from Firestore based on userId
+// useEffect(() => {
+//   const fetchPlaylists = async () => {
+//     const userId = auth.currentUser?.uid;  // Get the current user's ID
+//     if (userId) {
+//       const fetchedPlaylists = await fetchAllPlaylists(userId);
+//       setPlaylists(fetchedPlaylists);
+//     }
+//   };
+//   fetchPlaylists();
+// }, []);
+
+// Fetch playlists on user state change
+useEffect(() => {
+  if (user) {
+    const fetchPlaylists = async () => {
+      const fetchedPlaylists = await fetchAllPlaylists(user.uid); // Pass user ID to fetch playlists
+      setPlaylists(fetchedPlaylists);
+    };
+    fetchPlaylists();
+  }
+}, [user]);
+
+  // Handle adding a movie to a playlist
+  const addMovieToPlaylist = async () => {
+    if (!selectedPlaylist) {
+      alert("Please select or create a playlist.");
+      return;
+    }
+  
+    if (currentMovie) {
+      setLoading(true); // Show loading indicator
+  
+      const playlistToUpdate = playlists.find((playlist) => playlist.id === selectedPlaylist);
+      if (playlistToUpdate) {
+        // Ensure that movies is always an array, even if it's undefined
+        const updatedMovies = [...(playlistToUpdate.movies || []), currentMovie]; // Default to an empty array if movies is undefined
+  
+        await updatePlaylist(selectedPlaylist, { movies: updatedMovies }); // Update Firestore
+  
+        // Update local state to reflect the added movie
+        const updatedPlaylists = playlists.map((playlist) => 
+          playlist.id === selectedPlaylist
+            ? { ...playlist, movies: updatedMovies } // Update the current playlist with new movie
+            : playlist
+        );
+  
+        setPlaylists(updatedPlaylists); // Set the updated playlists state
+  
+        alert(`Movie ${currentMovie.title} added to playlist ${playlistToUpdate.name}`);
+      }
+  
+      setLoading(false); // Hide loading indicator
+      handlePlaylistModalClose(); // Close the modal after adding the movie
+    }
+  };
+  
+  
+  
+  
+
+  // Handle creating a new playlist
+  const handleCreatePlaylist = async () => {
+    const playlistName = prompt("Enter the name of the new playlist");
+    if (playlistName) {
+      const newPlaylist = await createPlaylist({ name: playlistName, movies: [] });
+      setPlaylists([...playlists, newPlaylist]);
+      setSelectedPlaylist(newPlaylist.id); // Automatically select the newly created playlist
+      handlePlaylistModalClose();
+    }
+  };
 
   const languageMap = {
     english: "en",
@@ -243,6 +364,46 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
           handleMoodChange={handleMoodChange} // Pass mood handler to FiltersDrawer
           resetFilters={resetFilters}
         />
+
+
+       {/* Playlist Modal */}
+      <Modal open={openPlaylistModal} onClose={handlePlaylistModalClose} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box sx={{ backgroundColor: "white", padding: 2, borderRadius: "10px", width: "50%" }}>
+      
+          <Box sx={{ mt: 0 }}>
+            <Typography >Select a Playlist</Typography>
+            <select
+              value={selectedPlaylist || ""}
+              onChange={(e) => setSelectedPlaylist(e.target.value)}
+              style={{ width: "100%", padding: "8px", borderRadius: "5px" }}
+            >
+              <option value="">--Select a Playlist--</option>
+        {playlists
+          .filter(playlist => playlist.userId === auth.currentUser?.uid) // Filter playlists by current user's ID
+          .map((playlist) => (
+            <option key={playlist.id} value={playlist.id}>
+              {playlist.name}
+            </option>
+              ))}
+            </select>
+          </Box>
+          
+
+          <Button
+      onClick={() => {
+        addMovieToPlaylist(); // Call the function to add the movie
+        handlePlaylistModalClose(); // Close the modal after adding
+      }}
+      sx={{ mt: 4 }}
+      variant="contained"
+      color="primary"
+    >
+      Add Movie to Playlist
+    </Button>
+
+        </Box>
+      </Modal>
+
       </Box>
 
       <Box
@@ -264,16 +425,23 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
           <SearchField onSearchChange={handleSearchChange} />
         </Box>
 
-        <Grid container spacing={2} sx={{ maxWidth: "1200px" }}>
+        <Grid container spacing={2} sx={{ mb: 7,maxWidth: "1200px" }}>
           {movies.length > 0 ? (
             movies.map((movie) => (
               <Grid item xs={12} sm={6} md={4} lg={2.4} key={movie.id}>
+                 {/* Add space between movie card and button */}
+                 <Box sx={{ marginBottom: "0rem" }}>
+          <Button onClick={() => handlePlaylistModalOpen(movie)}>+ Add to Playlist</Button>
+        </Box>
+                 
                 <MovieCard
                   mode={mode}
                   title={movie.title}
                   id={movie.id}
+                  movie={movie}
                   genre={mapGenres(movie.genre_ids)}
                   image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  onLearnMore={() => handleLearnMoreClick(movie)} // Show details on click
                   selectedMovies={
                     mode === "choose-movies" ? selectedMovies : []
                   } // Pass selectedMovies only if mode is "choose-movies"
@@ -287,12 +455,18 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                           })
                       : null
                   } // Set onSelect only if mode is "choose-movies"
-                />
-              </Grid>
+                  handlePlaylistModalOpen={handlePlaylistModalOpen} // Pass function here
+
+               />
+               
+        
+               
+         </Grid>
             ))
           ) : (
             <Typography>No movies available.</Typography>
           )}
+          
         </Grid>
 
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -373,6 +547,22 @@ export default function Dashboard({ mode, onSelectMovie, selectedMovies }) {
                 </Grid>
               ))}
           </Grid>
+        </Box>
+      </Modal>
+       {/* Movie Details Modal */}
+       <Modal open={openMovieModal} onClose={handleCloseMovieModal} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box sx={{ backgroundColor: "lightgreen", padding: 4, borderRadius: 2, width: "60%", maxHeight: "80vh", overflowY: "auto" }}>
+          {selectedMovie && (
+            <>
+              <Typography variant="h5" gutterBottom sx={{color:"white"}}>{selectedMovie.title}</Typography>
+              <img src={`https://image.tmdb.org/t/p/w500${selectedMovie.poster_path}`} alt={selectedMovie.title} style={{ marginTop: "10px", marginBottom:"10px", width: "15%" }} />
+
+              <Typography variant="body1" color="white">{selectedMovie.overview}</Typography>
+              <Typography variant="h6" sx={{ mt: 2 , color:"white"}}>Genres: {mapGenres(selectedMovie.genre_ids)}</Typography>
+              <Typography variant="h6"sx={{color:"white"}}>Release Date: {selectedMovie.release_date}</Typography>
+              <Button onClick={handleCloseMovieModal} sx={{ mt: 2 }} variant="contained" color="primary">Close</Button>
+            </>
+          )}
         </Box>
       </Modal>
     </Box>
