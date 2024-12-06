@@ -20,8 +20,6 @@ const BingoBoard = () => {
   const [showModal, setShowModal] = useState(false);
   const [anonymousUsername, setAnonymousUsername] = useState("");
 
-
-
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const eventIdFromURL = queryParams.get("eventId");
@@ -119,76 +117,13 @@ const BingoBoard = () => {
 
   return (
     <>
-      {/* Username Modal */}
-      <Modal open={showModal} onClose={() => setShowModal(false)}>
-        <Box
-          className="slide-in"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 400,
-            bgcolor: "var(--secondary-bg)",
-            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.5)",
-            p: 4,
-            borderRadius: "var(--border-radius)",
-          }}
-        >
-          <Typography
-            variant="h4"
-            sx={{
-              mb: 2,
-              color: "var(--accent-color)",
-              fontWeight: 700,
-              textAlign: "center",
-            }}
-          >
-            Welcome to Bingo!
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              mb: 3,
-              color: "var(--secondary-text)",
-              textAlign: "center",
-            }}
-          >
-            Please enter a username to start playing.
-          </Typography>
-          <TextField
-            fullWidth
-            label="Username"
-            value={anonymousUsername}
-            onChange={(e) => setAnonymousUsername(e.target.value)}
-            sx={{
-              mb: 2,
-              input: { color: "var(--primary-text)" },
-              label: { color: "var(--secondary-text)" },
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              borderRadius: "var(--border-radius)",
-            }}
-          />
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={handleStartAsAnonymous}
-            disabled={!anonymousUsername.trim()}
-            sx={{
-              bgcolor: "var(--accent-color)",
-              color: "var(--primary-bg)",
-              fontWeight: 600,
-              borderRadius: "var(--border-radius)",
-              py: 1.5,
-              "&:hover": {
-                bgcolor: "var(--highlight-color)",
-              },
-            }}
-          >
-            Start Game
-          </Button>
-        </Box>
-      </Modal>
+      <Button
+        variant="link"
+        href="/all-events"
+        sx={{ mb: 2, color: "var(--primary-text)", p: 0 }}
+      >
+        Go to All Events
+      </Button>
 
       {/* Main Bingo Board Layout */}
       <Box
