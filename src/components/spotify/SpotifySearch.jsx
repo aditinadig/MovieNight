@@ -73,7 +73,7 @@ const SpotifySearch = ({ albumName }) => {
 
   const handleLogin = () => {
     const clientId = "5a7e7dd5bf8741a3b2daf1ae4a47ed78";
-    const redirectUri = "http://localhost:4321/dashboard";
+    const redirectUri = "https://movienight-b60a3.web.app/dashboard";
     const scopes = [
       "streaming",
       "user-read-private",
