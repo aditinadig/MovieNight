@@ -104,6 +104,9 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
   const [fetchedInvitees, setFetchedInvitees] = useState([]); // New state for storing fetched invitee data
+  const [originalAllUsers, setOriginalAllUsers] = useState([]); // Backup of the full user list
+
+
 
   // Retrieve all registered users from Firestore, excluding those already invited
   const retrieveAllUsers = async () => {
@@ -119,6 +122,8 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
       const currentUserUID = auth.currentUser?.uid;
       const filteredUsers = users.filter((user) => user.UID !== currentUserUID);
       setAllUsers(filteredUsers);
+      setOriginalAllUsers(filteredUsers); // Save the original list
+
     } catch (error) {
       console.error("Error retrieving users:", error);
     }
@@ -281,7 +286,21 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const handleOpenDashboardModal = () => setDashboardModalOpen(true);
   const handleCloseDashboardModal = () => setDashboardModalOpen(false);
 
-  const handleUserSearchChange = (query) => {};
+  const [searchTerm, setSearchTerm] = useState("");  // Track search input
+
+
+  //const handleUserSearchChange = (query) => {};
+
+  const handleUserSearchChange = (query) => {
+    if (query === "") {
+      setAllUsers(originalAllUsers); // Reset to original list
+    } else {
+      const filteredUsers = originalAllUsers.filter((user) =>
+        user.username.toLowerCase().includes(query.toLowerCase())
+      );
+      setAllUsers(filteredUsers);
+    }
+  };
 
   return (
     <Box
