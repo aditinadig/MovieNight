@@ -53,7 +53,9 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const [selectedMovies, setSelectedMovies] = useState(
     initialEvent?.movies || []
   );
-  const [invitees, setInvitees] = useState(initialEvent?.invitees || []);
+  const [invitees, setInvitees] = useState(
+    initialEvent?.invitees || []
+  );
 
   useEffect(() => {
     const authToken = Cookies.get("authToken");
@@ -114,7 +116,9 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
           UID: doc.data().UID,
         }))
         .filter((user) => !invitees.includes(user.UID));
-      setAllUsers(users);
+      const currentUserUID = auth.currentUser?.uid;
+      const filteredUsers = users.filter((user) => user.UID !== currentUserUID);
+      setAllUsers(filteredUsers);
     } catch (error) {
       console.error("Error retrieving users:", error);
     }
@@ -175,6 +179,8 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
         hour: "2-digit",
         minute: "2-digit",
       });
+
+      invitees.push(creatorId); // Add the creator to the invitees list
 
       const eventRef = await addDoc(collection(db, "events"), {
         creator: creatorId,
@@ -275,10 +281,7 @@ const EventForm = ({ initialEvent, onSave, onCancel }) => {
   const handleOpenDashboardModal = () => setDashboardModalOpen(true);
   const handleCloseDashboardModal = () => setDashboardModalOpen(false);
 
-  const handleUserSearchChange = (query) => {
-    
-  };
-
+  const handleUserSearchChange = (query) => {};
 
   return (
     <Box
